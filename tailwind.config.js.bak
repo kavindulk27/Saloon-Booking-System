@@ -1,0 +1,38 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        gold: {
+          50: '#fffbea',
+          100: '#fff1c5',
+          200: '#ffe585',
+          300: '#ffd246',
+          400: '#ffbc1b',
+          500: '#e1a100',
+          600: '#bc7700',
+          700: '#955600',
+          800: '#7a4506',
+          900: '#67390b',
+          950: '#3c1d00',
+        },
+        premium: {
+          black: '#121212',
+          dark: '#1A1A1A',
+          gray: '#2C2C2C',
+          gold: '#D4AF37',
+        }
+      },
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        serif: ['Playfair Display', 'serif'],
+      }
+    },
+  },
+  plugins: [],
+}
