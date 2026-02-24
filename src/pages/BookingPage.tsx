@@ -10,8 +10,11 @@ import { useAppointmentStore } from '../store/useAppointmentStore';
 import { mockServices, mockStaff } from '../utils/mockData';
 import { formatPrice, formatDuration } from '../utils/helpers';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useReviewStore } from '../store/useReviewStore';
+import { Search, Filter, Tag } from 'lucide-react';
+
+const categories = ['All', 'Hair', 'Facial', 'Bridal', 'Nails', 'Massage', 'Makeup'];
 
 const steps = [
     { id: 1, name: 'Service', icon: <Scissors className="w-4 h-4" /> },
@@ -23,12 +26,29 @@ export default function BookingPage() {
     const { user } = useAuthStore();
     const { addAppointment } = useAppointmentStore();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const preServiceId = searchParams.get('service');
 
-    const [step, setStep] = useState(1);
-    const [selectedService, setSelectedService] = useState(mockServices[0]);
+    const [step, setStep] = useState(preServiceId ? 2 : 1);
+    const [selectedService, setSelectedService] = useState(
+        mockServices.find(s => s.id === preServiceId) || mockServices[0]
+    );
     const [selectedStaff, setSelectedStaff] = useState(mockStaff[0]);
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [selectedTime, setSelectedTime] = useState('10:00 AM');
+
+    // Search & Filter State
+    const [search, setSearch] = useState('');
+    const [activeCategory, setActiveCategory] = useState('All');
+
+    const filteredServices = useMemo(() => {
+        return mockServices.filter(s => {
+            const matchesCat = activeCategory === 'All' || s.category === activeCategory;
+            const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) ||
+                s.description.toLowerCase().includes(search.toLowerCase());
+            return matchesCat && matchesSearch && s.isActive;
+        });
+    }, [search, activeCategory]);
 
     const handleBooking = async () => {
         if (!user) {
@@ -107,30 +127,92 @@ export default function BookingPage() {
                         exit={{ opacity: 0, x: -20 }}
                         className="space-y-6"
                     >
-                        <div className="text-center mb-10">
-                            <h2 className="font-serif text-3xl font-bold text-[var(--text-primary)] mb-2">Select a Service</h2>
-                            <p className="text-[var(--text-muted)]">Choose the perfect treatment for your transformation</p>
+                        <div className="text-center mb-8">
+                            <h2 className="font-serif text-4xl font-bold text-white mb-3">Refine Your <span className="text-gradient">Experience</span></h2>
+                            <p className="text-gray-400">Select the hallmark treatment that defines your look.</p>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {mockServices.map(svc => (
-                                <button
-                                    key={svc.id}
-                                    onClick={() => { setSelectedService(svc); setStep(2); }}
-                                    className={`card-glass p-5 text-left transition-all duration-300 hover:border-[var(--gold)]/50 ${selectedService.id === svc.id ? 'border-[var(--gold)] bg-[var(--gold)]/5' : ''
-                                        }`}
-                                >
-                                    <div className="flex justify-between items-start mb-2">
-                                        <h3 className="font-bold text-[var(--text-primary)]">{svc.name}</h3>
-                                        <div className="text-[var(--gold)] font-bold">{formatPrice(svc.discountPrice || svc.price)}</div>
-                                    </div>
-                                    <p className="text-xs text-[var(--text-muted)] line-clamp-2 mb-3">{svc.description}</p>
-                                    <div className="flex items-center gap-3 text-[10px] text-[var(--text-muted)] uppercase tracking-widest font-bold">
-                                        <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {svc.duration}m</span>
-                                        <span className="flex items-center gap-1"><Sparkles className="w-3 h-3" /> {svc.category}</span>
-                                    </div>
-                                </button>
-                            ))}
+
+                        {/* Search & Filter UI */}
+                        <div className="flex flex-col md:flex-row gap-4 mb-8">
+                            <div className="relative flex-1">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                                <input
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    placeholder="Search specific treatments..."
+                                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-4 text-white focus:border-[var(--gold)]/50 focus:outline-none transition-all"
+                                />
+                            </div>
+                            <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+                                {categories.map(cat => (
+                                    <button
+                                        key={cat}
+                                        onClick={() => setActiveCategory(cat)}
+                                        className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap border transition-all ${activeCategory === cat
+                                                ? 'bg-[var(--gold)] text-black border-[var(--gold)] shadow-[0_0_15px_rgba(212,175,55,0.3)]'
+                                                : 'bg-white/5 text-gray-400 border-white/10 hover:border-white/20'
+                                            }`}
+                                    >
+                                        {cat}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
+
+                        {filteredServices.length === 0 ? (
+                            <div className="text-center py-20 bg-white/5 rounded-[2.5rem] border border-dashed border-white/10">
+                                <Filter className="w-10 h-10 text-gray-700 mx-auto mb-4 opacity-20" />
+                                <p className="text-gray-500 font-medium">No treatments match your preference.</p>
+                                <button onClick={() => { setSearch(''); setActiveCategory('All'); }} className="text-[var(--gold)] text-xs font-bold mt-4 hover:underline">Clear all filters</button>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                {filteredServices.map(svc => (
+                                    <motion.button
+                                        layout
+                                        key={svc.id}
+                                        onClick={() => { setSelectedService(svc); setStep(2); }}
+                                        className={`group relative h-full bg-white/5 border rounded-[2.5rem] overflow-hidden p-6 flex flex-col text-left hover:border-[var(--gold)]/30 transition-all duration-500 hover:shadow-[0_0_40px_rgba(212,175,55,0.05)] ${selectedService.id === svc.id ? 'border-[var(--gold)] bg-[var(--gold)]/5' : 'border-white/10'
+                                            }`}
+                                    >
+                                        <div className="flex justify-between items-start mb-4 relative z-10">
+                                            <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-[var(--gold)] group-hover:scale-110 transition-transform duration-500">
+                                                <Scissors className="w-6 h-6" />
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-[var(--gold)] font-bold text-lg">{formatPrice(svc.discountPrice || svc.price)}</div>
+                                                <div className="text-[8px] font-bold text-white/20 uppercase tracking-widest mt-1">Starting from</div>
+                                            </div>
+                                        </div>
+
+                                        <div className="relative z-10 mb-6">
+                                            <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[var(--gold)] transition-colors">{svc.name}</h3>
+                                            <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">{svc.description}</p>
+                                        </div>
+
+                                        <div className="mt-auto relative z-10 flex items-center gap-4 border-t border-white/5 pt-6">
+                                            <div className="flex items-center gap-1.5 px-2 py-1 bg-white/5 rounded-lg border border-white/10">
+                                                <Clock className="w-3 h-3 text-[var(--gold)]" />
+                                                <span className="text-[10px] font-bold text-white/50">{svc.duration}m</span>
+                                            </div>
+                                            <div className="flex items-center gap-1.5 px-2 py-1 bg-white/5 rounded-lg border border-white/10">
+                                                <Star className="w-3 h-3 text-[var(--gold)] fill-[var(--gold)]" />
+                                                <span className="text-[10px] font-bold text-white/50">4.9</span>
+                                            </div>
+                                            {svc.discountPrice && (
+                                                <div className="flex items-center gap-1.5 px-2 py-1 bg-green-500/10 rounded-lg border border-green-500/20 ml-auto">
+                                                    <Tag className="w-3 h-3 text-green-400" />
+                                                    <span className="text-[10px] font-bold text-green-400">Offer</span>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Decorative elements */}
+                                        <div className="absolute top-0 right-0 w-24 h-24 bg-[var(--gold)]/5 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </motion.button>
+                                ))}
+                            </div>
+                        )}
                     </motion.div>
                 )}
 

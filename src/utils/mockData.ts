@@ -128,6 +128,42 @@ export const mockServices: Service[] = [
         category: 'Massage',
         isActive: true,
     },
+    {
+        id: 'svc9',
+        name: 'Eyebrow Shaping & Threading',
+        description: 'Professional shaping for perfect eyebrows.',
+        price: 800,
+        duration: 20,
+        category: 'Makeup',
+        isActive: true,
+    },
+    {
+        id: 'svc10',
+        name: 'Natural Day Makeup',
+        description: 'Soft, natural makeup look for daily wear.',
+        price: 3000,
+        duration: 45,
+        category: 'Makeup',
+        isActive: true,
+    },
+    {
+        id: 'svc11',
+        name: 'Keratin Hair Treatment',
+        description: 'Smooth, frizz-free hair with premium keratin.',
+        price: 12000,
+        duration: 150,
+        category: 'Hair',
+        isActive: true,
+    },
+    {
+        id: 'svc12',
+        name: 'Anti-Acne Treatment',
+        description: 'Specialized facial for acne-prone skin.',
+        price: 4500,
+        duration: 60,
+        category: 'Facial',
+        isActive: true,
+    }
 ];
 
 // ==================== MOCK STAFF ====================
