@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, Check, XCircle, AlertCircle, Search, Filter } from 'lucide-react';
 import { useAppointmentStore } from '../../store/useAppointmentStore';
-import { formatPrice, formatDate, getStatusColor } from '../../utils/helpers';
-import type { AppointmentStatus } from '../../types';
+import { formatPrice, formatDate, getStatusColor, getPaymentColor } from '../../utils/helpers';
+import type { AppointmentStatus, PaymentStatus } from '../../types';
 import toast from 'react-hot-toast';
 
-const STATUSES: AppointmentStatus[] = ['Pending', 'Confirmed', 'Completed', 'Cancelled', 'No Show'];
+const STATUSES: AppointmentStatus[] = ['Pending', 'Confirmed', 'In Progress', 'Completed', 'Cancelled', 'No Show'];
 
 export default function AdminAppointmentsPage() {
     const { appointments, updateStatus } = useAppointmentStore();
@@ -20,11 +20,16 @@ export default function AdminAppointmentsPage() {
         const matchStatus = filterStatus === 'All' || a.status === filterStatus;
         const matchDate = !filterDate || a.date === filterDate;
         return matchSearch && matchStatus && matchDate;
-    });
+    }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     const handleStatus = (id: string, status: AppointmentStatus) => {
         updateStatus(id, status);
         toast.success(`Status updated to ${status}`);
+    };
+
+    const handlePaymentStatus = (id: string, status: PaymentStatus) => {
+        useAppointmentStore.getState().updatePaymentStatus(id, status);
+        toast.success(`Payment marked as ${status}`);
     };
 
     return (
@@ -35,16 +40,16 @@ export default function AdminAppointmentsPage() {
             </div>
 
             {/* Filters */}
-            <div className="flex flex-wrap gap-3 mb-6">
-                <div className="relative">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6">
+                <div className="relative flex-1 min-w-0">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
-                    <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name or service..." className="input-field pl-10 w-64" />
+                    <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name or service..." className="input-field pl-10 w-full" />
                 </div>
-                <select value={filterStatus} onChange={e => setFilterStatus(e.target.value as any)} className="input-field w-40">
+                <select value={filterStatus} onChange={e => setFilterStatus(e.target.value as any)} className="input-field flex-1 sm:max-w-[160px]">
                     <option value="All">All Status</option>
                     {STATUSES.map(s => <option key={s}>{s}</option>)}
                 </select>
-                <input type="date" value={filterDate} onChange={e => setFilterDate(e.target.value)} className="input-field w-44" />
+                <input type="date" value={filterDate} onChange={e => setFilterDate(e.target.value)} className="input-field flex-1 sm:max-w-[180px]" />
                 {(filterDate || filterStatus !== 'All' || search) && (
                     <button onClick={() => { setSearch(''); setFilterStatus('All'); setFilterDate(''); }} className="btn-ghost text-sm flex items-center gap-1">
                         <XCircle className="w-4 h-4" /> Clear
@@ -62,6 +67,7 @@ export default function AdminAppointmentsPage() {
                                 <th className="text-left px-5 py-3">Date & Time</th>
                                 <th className="text-left px-5 py-3">Artist</th>
                                 <th className="text-left px-5 py-3">Amount</th>
+                                <th className="text-left px-5 py-3">Payment</th>
                                 <th className="text-left px-5 py-3">Status</th>
                                 <th className="text-right px-5 py-3">Update</th>
                             </tr>
@@ -95,33 +101,87 @@ export default function AdminAppointmentsPage() {
                                     <td className="px-5 py-4 text-[var(--text-muted)] text-xs">{apt.staffName || '—'}</td>
                                     <td className="px-5 py-4 font-semibold text-gradient">{formatPrice(apt.servicePrice)}</td>
                                     <td className="px-5 py-4">
+                                        <select
+                                            value={apt.paymentStatus}
+                                            onChange={(e) => handlePaymentStatus(apt.id, e.target.value as PaymentStatus)}
+                                            className={`text-[10px] bg-[var(--bg-secondary)] border border-[var(--border)] rounded px-2 py-1 font-bold cursor-pointer outline-none ${getPaymentColor(apt.paymentStatus)}`}
+                                        >
+                                            <option value="Unpaid" className="bg-[var(--bg-secondary)] text-[var(--text-primary)]">Unpaid</option>
+                                            <option value="Paid" className="bg-[var(--bg-secondary)] text-[var(--text-primary)]">Paid (Cash)</option>
+                                            <option value="Refunded" className="bg-[var(--bg-secondary)] text-[var(--text-primary)]">Refunded</option>
+                                        </select>
+                                    </td>
+                                    <td className="px-5 py-4">
                                         <span className={getStatusColor(apt.status)}>{apt.status}</span>
                                     </td>
                                     <td className="px-5 py-4">
-                                        <div className="flex items-center justify-end gap-1">
-                                            {apt.status === 'Pending' && (
-                                                <>
-                                                    <button onClick={() => handleStatus(apt.id, 'Confirmed')} className="text-xs px-2.5 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg hover:bg-blue-500/20 transition-all flex items-center gap-1">
-                                                        <Check className="w-3 h-3" /> Confirm
+                                        <div className="flex items-center justify-end gap-2">
+                                            {/* Status Actions */}
+                                            <div className="flex items-center gap-1">
+                                                {apt.status === 'Pending' && (
+                                                    <>
+                                                        <button
+                                                            onClick={() => handleStatus(apt.id, 'Confirmed')}
+                                                            className="text-[10px] px-2 py-1 bg-[var(--status-completed-bg)] text-[var(--status-completed)] border border-[var(--status-completed)]/20 rounded-md hover:bg-[var(--status-completed-bg)]/30 transition-all flex items-center gap-1"
+                                                            title="Confirm Appointment"
+                                                        >
+                                                            <Check className="w-3 h-3" /> Accept
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleStatus(apt.id, 'Cancelled')}
+                                                            className="text-[10px] px-2 py-1 bg-[var(--status-cancelled-bg)] text-[var(--status-cancelled)] border border-[var(--status-cancelled)]/20 rounded-md hover:bg-[var(--status-cancelled-bg)]/30 transition-all"
+                                                            title="Reject Appointment"
+                                                        >
+                                                            Reject
+                                                        </button>
+                                                    </>
+                                                )}
+                                                {apt.status === 'Confirmed' && (
+                                                    <>
+                                                        <button
+                                                            onClick={() => handleStatus(apt.id, 'In Progress')}
+                                                            className="text-[10px] px-2 py-1 bg-[var(--status-confirmed-bg)] text-[var(--status-confirmed)] border border-[var(--status-confirmed)]/20 rounded-md hover:bg-[var(--status-confirmed-bg)]/30 transition-all flex items-center gap-1"
+                                                            title="Start Service"
+                                                        >
+                                                            <Clock className="w-3 h-3" /> Start
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleStatus(apt.id, 'No Show')}
+                                                            className="text-[10px] px-2 py-1 bg-[var(--status-noshow-bg)] text-[var(--status-noshow)] border border-[var(--status-noshow)]/20 rounded-md hover:bg-[var(--status-noshow-bg)]/30 transition-all flex items-center gap-1"
+                                                            title="Mark as No Show"
+                                                        >
+                                                            <AlertCircle className="w-3 h-3" /> No Show
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleStatus(apt.id, 'Cancelled')}
+                                                            className="text-[10px] px-2 py-1 bg-[var(--status-cancelled-bg)] text-[var(--status-cancelled)] border border-[var(--status-cancelled)]/20 rounded-md hover:bg-[var(--status-cancelled-bg)]/30 transition-all"
+                                                            title="Cancel Appointment"
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                    </>
+                                                )}
+                                                {apt.status === 'In Progress' && (
+                                                    <button
+                                                        onClick={() => handleStatus(apt.id, 'Completed')}
+                                                        className="text-[10px] px-2 py-1 bg-[var(--status-completed-bg)] text-[var(--status-completed)] border border-[var(--status-completed)]/20 rounded-md hover:bg-[var(--status-completed-bg)]/30 transition-all flex items-center gap-1"
+                                                        title="Finish Service"
+                                                    >
+                                                        <Check className="w-3 h-3" /> Complete
                                                     </button>
-                                                    <button onClick={() => handleStatus(apt.id, 'Cancelled')} className="text-xs px-2.5 py-1 bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-all">
-                                                        Cancel
-                                                    </button>
-                                                </>
-                                            )}
-                                            {apt.status === 'Confirmed' && (
-                                                <>
-                                                    <button onClick={() => handleStatus(apt.id, 'Completed')} className="text-xs px-2.5 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded-lg hover:bg-green-500/20 transition-all flex items-center gap-1">
-                                                        <Check className="w-3 h-3" /> Done
-                                                    </button>
-                                                    <button onClick={() => handleStatus(apt.id, 'No Show')} className="text-xs px-2.5 py-1 bg-gray-500/10 text-gray-400 border border-gray-500/20 rounded-lg hover:bg-gray-500/20 transition-all flex items-center gap-1">
-                                                        <AlertCircle className="w-3 h-3" /> No-Show
-                                                    </button>
-                                                </>
-                                            )}
-                                            {['Completed', 'Cancelled', 'No Show'].includes(apt.status) && (
-                                                <span className="text-xs text-gray-600">—</span>
-                                            )}
+                                                )}
+                                            </div>
+
+                                            {/* Manual Override Dropdown */}
+                                            <select
+                                                value={apt.status}
+                                                onChange={(e) => handleStatus(apt.id, e.target.value as AppointmentStatus)}
+                                                className="bg-[var(--bg-card)] border border-[var(--border)] text-[10px] rounded px-1 py-0.5 text-[var(--text-muted)] focus:border-[var(--gold)] outline-none"
+                                            >
+                                                {STATUSES.map(s => (
+                                                    <option key={s} value={s} className="bg-[var(--bg-card)] text-[var(--text-primary)]">{s}</option>
+                                                ))}
+                                            </select>
                                         </div>
                                     </td>
                                 </motion.tr>

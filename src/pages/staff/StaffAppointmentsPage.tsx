@@ -111,7 +111,7 @@ export default function StaffAppointmentsPage() {
                                                 </button>
                                             )}
                                             {['Completed', 'Cancelled', 'No Show'].includes(apt.status) && (
-                                                <span className="text-xs text-gray-600">—</span>
+                                                <span className="text-xs text-[var(--text-muted)]">—</span>
                                             )}
                                         </div>
                                     </td>

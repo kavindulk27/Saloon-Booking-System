@@ -23,7 +23,11 @@ export default function AdminDashboard() {
         return { todayApts: todayApts.length, monthRevenue, totalCustomers, rate };
     }, [appointments]);
 
-    const recentAppointments = appointments.slice(0, 5);
+    const recentAppointments = useMemo(() => {
+        return [...appointments]
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            .slice(0, 5);
+    }, [appointments]);
     const maxRevenue = Math.max(...revenueData.map(d => d.revenue));
     const maxPeak = Math.max(...peakHoursData.map(d => d.count));
 
@@ -38,10 +42,10 @@ export default function AdminDashboard() {
             {/* Stat Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 {[
-                    { label: "Today's Appointments", value: stats.todayApts, icon: <Calendar className="w-5 h-5" />, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-                    { label: 'Monthly Revenue', value: formatPrice(stats.monthRevenue), icon: <TrendingUp className="w-5 h-5" />, color: 'text-[#D4AF37]', bg: 'bg-[#D4AF37]/10' },
-                    { label: 'Total Customers', value: stats.totalCustomers, icon: <Users className="w-5 h-5" />, color: 'text-purple-400', bg: 'bg-purple-500/10' },
-                    { label: 'Completion Rate', value: `${stats.rate}%`, icon: <CheckCircle className="w-5 h-5" />, color: 'text-green-400', bg: 'bg-green-500/10' },
+                    { label: "Today's Appointments", value: stats.todayApts, icon: <Calendar className="w-5 h-5" />, color: 'text-[var(--status-confirmed)]', bg: 'bg-[var(--status-confirmed-bg)]' },
+                    { label: 'Monthly Revenue', value: formatPrice(stats.monthRevenue), icon: <TrendingUp className="w-5 h-5" />, color: 'text-[var(--gold)]', bg: 'bg-[var(--gold)]/10' },
+                    { label: 'Total Customers', value: stats.totalCustomers, icon: <Users className="w-5 h-5" />, color: 'text-[var(--status-inprogress)]', bg: 'bg-[var(--status-inprogress-bg)]' },
+                    { label: 'Completion Rate', value: `${stats.rate}%`, icon: <CheckCircle className="w-5 h-5" />, color: 'text-[var(--status-completed)]', bg: 'bg-[var(--status-completed-bg)]' },
                 ].map((s, i) => (
                     <motion.div
                         key={s.label}
@@ -141,7 +145,7 @@ export default function AdminDashboard() {
                                     <div className="text-sm font-medium text-[var(--text-primary)] truncate">{s.name}</div>
                                     <div className="text-xs text-[var(--text-muted)]">⭐ {s.rating}</div>
                                 </div>
-                                <div className={`w-2 h-2 rounded-full flex-shrink-0 ${s.isOnLeave ? 'bg-red-400' : 'bg-green-400'}`} />
+                                <div className={`w-2 h-2 rounded-full flex-shrink-0 ${s.isOnLeave ? 'bg-[var(--status-cancelled)]' : 'bg-[var(--status-completed)]'}`} />
                             </div>
                         ))}
                     </div>
@@ -158,7 +162,7 @@ export default function AdminDashboard() {
                                         className="w-full bg-[#D4AF37]/60 rounded-t"
                                         style={{ height: `${(h.count / maxPeak) * 100}%`, minHeight: '2px' }}
                                     />
-                                    <span className="text-[8px] text-gray-600 hidden sm:block">{h.hour.replace('AM', '').replace('PM', '')}</span>
+                                    <span className="text-[8px] text-[var(--text-muted)] hidden sm:block">{h.hour.replace('AM', '').replace('PM', '')}</span>
                                 </div>
                             ))}
                         </div>

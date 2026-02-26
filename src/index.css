@@ -13,12 +13,48 @@
 }
 
 @layer base {
+
+  /* Dark Mode (Default) */
+  /* Light Mode Override - High Contrast Slate Palette */
+  .light {
+    --bg-primary: #E2E8F0;
+    /* Slate 200 - Muted primary background */
+    --bg-secondary: #CBD5E1;
+    /* Slate 300 - Darker secondary background */
+    --bg-card: #F1F5F9;
+    /* Slate 100 - Cards slightly darker than white */
+    --bg-glass: rgba(15, 23, 42, 0.08);
+    --bg-input: #F8FAFC;
+    /* Slate 50 - Inputs almost white but not pure white */
+    --text-primary: #020617;
+    --text-secondary: #0F172A;
+    --text-muted: #334155;
+    --border: #94A3B8;
+    --border-glass: rgba(15, 23, 42, 0.15);
+    --navbar-bg: rgba(226, 232, 240, 0.95);
+    /* Matches slate 200 */
+    --scrollbar-track: #CBD5E1;
+
+    /* Status Colors - High Contrast for Light Mode */
+    --status-pending: #854D0E;
+    --status-pending-bg: rgba(234, 179, 8, 0.15);
+    --status-confirmed: #1D4ED8;
+    --status-confirmed-bg: rgba(59, 130, 246, 0.15);
+    --status-inprogress: #1E40AF;
+    --status-inprogress-bg: rgba(30, 64, 175, 0.15);
+    --status-completed: #166534;
+    --status-completed-bg: rgba(34, 197, 94, 0.15);
+    --status-cancelled: #991B1B;
+    --status-cancelled-bg: rgba(239, 68, 68, 0.15);
+    --status-noshow: #334155;
+    --status-noshow-bg: rgba(100, 116, 139, 0.15);
+  }
+
   :root {
     --gold: #D4AF37;
     --gold-light: #F0D060;
     --gold-dark: #A08820;
 
-    /* Dark Mode (Default) */
     --bg-primary: #121212;
     --bg-secondary: #0A0A0A;
     --bg-card: #1E1E1E;
@@ -30,21 +66,21 @@
     --border: #333333;
     --border-glass: rgba(255, 255, 255, 0.1);
     --navbar-bg: rgba(18, 18, 18, 0.8);
-  }
+    --scrollbar-track: #1A1A1A;
 
-  /* Light Mode Override */
-  .light {
-    --bg-primary: #F8F9FA;
-    --bg-secondary: #FFFFFF;
-    --bg-card: #FFFFFF;
-    --bg-glass: rgba(0, 0, 0, 0.02);
-    --bg-input: #FFFFFF;
-    --text-primary: #1A1A1A;
-    --text-secondary: #4B5563;
-    --text-muted: #6B7280;
-    --border: #E5E7EB;
-    --border-glass: rgba(0, 0, 0, 0.08);
-    --navbar-bg: rgba(255, 255, 255, 0.8);
+    /* Status Colors - Dark Mode Default */
+    --status-pending: #FACC15;
+    --status-pending-bg: rgba(234, 179, 8, 0.2);
+    --status-confirmed: #60A5FA;
+    --status-confirmed-bg: rgba(59, 130, 246, 0.2);
+    --status-inprogress: #93C5FD;
+    --status-inprogress-bg: rgba(30, 64, 175, 0.2);
+    --status-completed: #4ADE80;
+    --status-completed-bg: rgba(34, 197, 94, 0.2);
+    --status-cancelled: #F87171;
+    --status-cancelled-bg: rgba(239, 68, 68, 0.2);
+    --status-noshow: #9CA3AF;
+    --status-noshow-bg: rgba(107, 114, 128, 0.2);
   }
 
   * {
@@ -71,7 +107,7 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #1a1a1a;
+    background: var(--scrollbar-track);
   }
 
   ::-webkit-scrollbar-thumb {
@@ -211,68 +247,39 @@
   }
 
   .badge-pending {
-    display: inline-flex;
-    align-items: center;
-    gap: .25rem;
-    padding: .25rem .625rem;
-    border-radius: 9999px;
-    font-size: .75rem;
-    font-weight: 600;
-    background: rgba(234, 179, 8, 0.2);
-    color: #FACC15;
-    border: 1px solid rgba(234, 179, 8, 0.3);
+    background: var(--status-pending-bg);
+    color: var(--status-pending);
+    border: 1px solid var(--status-pending);
   }
 
   .badge-confirmed {
-    display: inline-flex;
-    align-items: center;
-    gap: .25rem;
-    padding: .25rem .625rem;
-    border-radius: 9999px;
-    font-size: .75rem;
-    font-weight: 600;
-    background: rgba(59, 130, 246, 0.2);
-    color: #60A5FA;
-    border: 1px solid rgba(59, 130, 246, 0.3);
+    background: var(--status-confirmed-bg);
+    color: var(--status-confirmed);
+    border: 1px solid var(--status-confirmed);
+  }
+
+  .badge-inprogress {
+    background: var(--status-inprogress-bg);
+    color: var(--status-inprogress);
+    border: 1px solid var(--status-inprogress);
   }
 
   .badge-completed {
-    display: inline-flex;
-    align-items: center;
-    gap: .25rem;
-    padding: .25rem .625rem;
-    border-radius: 9999px;
-    font-size: .75rem;
-    font-weight: 600;
-    background: rgba(34, 197, 94, 0.2);
-    color: #4ADE80;
-    border: 1px solid rgba(34, 197, 94, 0.3);
+    background: var(--status-completed-bg);
+    color: var(--status-completed);
+    border: 1px solid var(--status-completed);
   }
 
   .badge-cancelled {
-    display: inline-flex;
-    align-items: center;
-    gap: .25rem;
-    padding: .25rem .625rem;
-    border-radius: 9999px;
-    font-size: .75rem;
-    font-weight: 600;
-    background: rgba(239, 68, 68, 0.2);
-    color: #F87171;
-    border: 1px solid rgba(239, 68, 68, 0.3);
+    background: var(--status-cancelled-bg);
+    color: var(--status-cancelled);
+    border: 1px solid var(--status-cancelled);
   }
 
   .badge-noshow {
-    display: inline-flex;
-    align-items: center;
-    gap: .25rem;
-    padding: .25rem .625rem;
-    border-radius: 9999px;
-    font-size: .75rem;
-    font-weight: 600;
-    background: rgba(107, 114, 128, 0.2);
-    color: #9CA3AF;
-    border: 1px solid rgba(107, 114, 128, 0.3);
+    background: var(--status-noshow-bg);
+    color: var(--status-noshow);
+    border: 1px solid var(--status-noshow);
   }
 
 
@@ -337,7 +344,7 @@
   }
 
   .table-row:hover {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--bg-glass);
   }
 }
 
@@ -379,7 +386,7 @@
   }
 
   .animate-shimmer {
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+    background: linear-gradient(90deg, transparent, var(--bg-glass), transparent);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
   }

@@ -60,20 +60,20 @@ export default function StaffLeavePage() {
     return (
         <div className="p-6 max-w-5xl mx-auto">
             <div className="mb-8">
-                <h1 className="font-serif text-2xl font-bold text-white">Leave Management</h1>
-                <p className="text-gray-500 text-sm mt-1">Request time off and track your approval status</p>
+                <h1 className="font-serif text-2xl font-bold text-[var(--text-primary)]">Leave Management</h1>
+                <p className="text-[var(--text-muted)] text-sm mt-1">Request time off and track your approval status</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Request Form */}
                 <div className="lg:col-span-1">
                     <div className="card p-6 sticky top-6">
-                        <h2 className="font-semibold text-white mb-6 flex items-center gap-2">
+                        <h2 className="font-semibold text-[var(--text-primary)] mb-6 flex items-center gap-2">
                             <Send className="w-4 h-4 text-[var(--gold)]" /> New Request
                         </h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">Start Date</label>
+                                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5 uppercase tracking-wider">Start Date</label>
                                 <div className="relative">
                                     <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                                     <input
@@ -86,7 +86,7 @@ export default function StaffLeavePage() {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">End Date</label>
+                                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5 uppercase tracking-wider">End Date</label>
                                 <div className="relative">
                                     <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                                     <input
@@ -99,7 +99,7 @@ export default function StaffLeavePage() {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">Reason</label>
+                                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1.5 uppercase tracking-wider">Reason</label>
                                 <textarea
                                     value={reason}
                                     onChange={e => setReason(e.target.value)}
@@ -122,12 +122,12 @@ export default function StaffLeavePage() {
 
                 {/* Status List */}
                 <div className="lg:col-span-2 space-y-4">
-                    <h2 className="font-semibold text-white mb-4 flex items-center gap-2">
+                    <h2 className="font-semibold text-[var(--text-primary)] mb-4 flex items-center gap-2">
                         <Clock className="w-4 h-4 text-[var(--gold)]" /> My Requests
                     </h2>
 
                     {myLeaves.length === 0 ? (
-                        <div className="card p-12 text-center text-gray-500 border-dashed">
+                        <div className="card p-12 text-center text-[var(--text-muted)] border-dashed">
                             <AlertCircle className="w-12 h-12 mx-auto mb-3 opacity-20" />
                             <p>No leave requests found</p>
                         </div>
@@ -142,32 +142,32 @@ export default function StaffLeavePage() {
                             >
                                 <div className="flex justify-between items-start mb-3">
                                     <div className="flex items-center gap-3">
-                                        <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
+                                        <div className="p-2.5 rounded-xl bg-[var(--bg-glass)] border border-[var(--border)]">
                                             <Calendar className="w-5 h-5 text-[var(--gold)]" />
                                         </div>
                                         <div>
-                                            <div className="text-sm font-bold text-white">
+                                            <div className="text-sm font-bold text-[var(--text-primary)]">
                                                 {formatDate(l.startDate)} - {formatDate(l.endDate)}
                                             </div>
-                                            <div className="text-[10px] text-gray-500 flex items-center gap-1 mt-0.5">
+                                            <div className="text-[10px] text-[var(--text-muted)] flex items-center gap-1 mt-0.5">
                                                 Applied on {formatDate(l.appliedAt)}
                                             </div>
                                         </div>
                                     </div>
                                     <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${l.status === 'Approved' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-                                            l.status === 'Rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                                                'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                                        l.status === 'Rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                                            'bg-amber-500/10 text-amber-400 border-amber-500/20'
                                         }`}>
                                         {getStatusIcon(l.status)} {l.status}
                                     </div>
                                 </div>
-                                <p className="text-sm text-gray-400 leading-relaxed pl-[52px]">
+                                <p className="text-sm text-[var(--text-secondary)] leading-relaxed pl-[52px]">
                                     "{l.reason}"
                                 </p>
                                 {l.adminComment && (
-                                    <div className="mt-4 ml-[52px] p-3 rounded-lg bg-white/5 border-l-2 border-[var(--gold)]/30">
+                                    <div className="mt-4 ml-[52px] p-3 rounded-lg bg-[var(--bg-glass)] border-l-2 border-[var(--gold)]/30">
                                         <div className="text-[10px] font-bold text-[var(--gold)] uppercase mb-1">Admin Feedback</div>
-                                        <p className="text-xs text-gray-500 italic">
+                                        <p className="text-xs text-[var(--text-muted)] italic">
                                             {l.adminComment}
                                         </p>
                                     </div>

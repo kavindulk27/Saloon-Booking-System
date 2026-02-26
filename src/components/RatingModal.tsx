@@ -63,7 +63,7 @@ export default function RatingModal({ isOpen, onClose, appointment }: RatingModa
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="relative w-full max-w-lg bg-[#1A1A1A] border border-white/10 rounded-[32px] shadow-2xl overflow-hidden"
+                        className="relative w-full max-w-lg bg-[var(--bg-card)] border border-[var(--border)] rounded-[32px] shadow-2xl overflow-hidden"
                     >
                         {/* Header Decoration */}
                         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-50" />
@@ -72,14 +72,14 @@ export default function RatingModal({ isOpen, onClose, appointment }: RatingModa
                             <div className="flex justify-between items-start mb-6">
                                 <div>
                                     <span className="text-[10px] uppercase tracking-[0.2em] text-[#D4AF37] font-bold mb-2 block">Leave a Review</span>
-                                    <h2 className="text-2xl font-serif font-bold text-white">How was your {appointment.serviceName}?</h2>
+                                    <h2 className="text-2xl font-serif font-bold text-[var(--text-primary)]">How was your {appointment.serviceName}?</h2>
                                     {appointment.staffName && (
-                                        <p className="text-sm text-gray-500 mt-1 flex items-center gap-1.5">
-                                            Artist: <span className="text-gray-300 font-medium">{appointment.staffName}</span>
+                                        <p className="text-sm text-[var(--text-muted)] mt-1 flex items-center gap-1.5">
+                                            Artist: <span className="text-[var(--text-secondary)] font-medium">{appointment.staffName}</span>
                                         </p>
                                     )}
                                 </div>
-                                <button onClick={onClose} className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 transition-colors">
+                                <button onClick={onClose} className="p-2 rounded-xl bg-[var(--bg-glass)] hover:bg-[var(--bg-glass)] hover:brightness-110 text-[var(--text-muted)] transition-colors">
                                     <X className="w-5 h-5" />
                                 </button>
                             </div>
@@ -99,14 +99,14 @@ export default function RatingModal({ isOpen, onClose, appointment }: RatingModa
                                             >
                                                 <Star
                                                     className={`w-10 h-10 transition-all duration-300 ${(hover || rating) >= star
-                                                            ? 'fill-[#D4AF37] text-[#D4AF37] filter drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]'
-                                                            : 'text-gray-700'
+                                                        ? 'fill-[#D4AF37] text-[#D4AF37] filter drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]'
+                                                        : 'text-[var(--border)] fill-[var(--bg-glass)]'
                                                         }`}
                                                 />
                                             </button>
                                         ))}
                                     </div>
-                                    <p className="mt-4 text-xs font-bold uppercase tracking-widest text-gray-500">
+                                    <p className="mt-4 text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">
                                         {rating === 5 ? 'Exceptional! ✨' :
                                             rating === 4 ? 'Very Good 👍' :
                                                 rating === 3 ? 'Good 🙂' :
@@ -117,23 +117,23 @@ export default function RatingModal({ isOpen, onClose, appointment }: RatingModa
 
                                 {/* Comment Area */}
                                 <div className="space-y-3">
-                                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
+                                    <label className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] flex items-center gap-2">
                                         <MessageSquare className="w-4 h-4" /> Share your experience (Optional)
                                     </label>
                                     <textarea
                                         value={comment}
                                         onChange={(e) => setComment(e.target.value)}
                                         placeholder="Tell us what you loved..."
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white text-sm focus:border-[#D4AF37]/50 focus:outline-none transition-all h-32 resize-none"
+                                        className="w-full bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl p-4 text-[var(--text-primary)] text-sm focus:border-[#D4AF37]/50 focus:outline-none transition-all h-32 resize-none"
                                     />
                                 </div>
 
                                 {/* Trust Badge */}
-                                <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/5">
-                                    <ShieldCheck className="w-5 h-5 text-green-500" />
+                                <div className="flex items-center gap-3 p-4 bg-[var(--bg-glass)] rounded-2xl border border-[var(--border-glass)]">
+                                    <ShieldCheck className="w-5 h-5 text-[var(--status-completed)]" />
                                     <div>
-                                        <p className="text-xs font-bold text-white">Verified Review</p>
-                                        <p className="text-[10px] text-gray-500 italic">Your feedback helps our artists grow.</p>
+                                        <p className="text-xs font-bold text-[var(--text-primary)]">Verified Review</p>
+                                        <p className="text-[10px] text-[var(--text-muted)] italic">Your feedback helps our artists grow.</p>
                                     </div>
                                 </div>
 

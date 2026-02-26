@@ -35,20 +35,20 @@ export default function StaffSchedulePage() {
     return (
         <div className="p-6 max-w-4xl">
             <div className="mb-6">
-                <h1 className="font-serif text-2xl font-bold text-white">My Schedule</h1>
-                <p className="text-gray-500 text-sm mt-0.5">Manage your daily appointments</p>
+                <h1 className="font-serif text-2xl font-bold text-[var(--text-primary)]">My Schedule</h1>
+                <p className="text-[var(--text-muted)] text-sm mt-0.5">Manage your daily appointments</p>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                 {[
-                    { label: "Today's Appointments", value: todayApts.length, color: 'text-blue-400' },
-                    { label: 'Completed', value: todayApts.filter(a => a.status === 'Completed').length, color: 'text-green-400' },
-                    { label: 'Earned Today', value: formatPrice(totalRevenue), color: 'text-[#D4AF37]' },
+                    { label: "Today's Appointments", value: todayApts.length, color: 'text-[var(--status-confirmed)]' },
+                    { label: 'Completed', value: todayApts.filter(a => a.status === 'Completed').length, color: 'text-[var(--status-completed)]' },
+                    { label: 'Earned Today', value: formatPrice(totalRevenue), color: 'text-[var(--gold)]' },
                 ].map(s => (
                     <div key={s.label} className="stat-card">
                         <div className={`text-xl font-bold ${s.color}`}>{s.value}</div>
-                        <div className="text-xs text-gray-500 mt-1">{s.label}</div>
+                        <div className="text-xs text-[var(--text-muted)] mt-1">{s.label}</div>
                     </div>
                 ))}
             </div>
@@ -62,7 +62,7 @@ export default function StaffSchedulePage() {
                         <button
                             key={i}
                             onClick={() => setSelectedDate(date)}
-                            className={`flex-shrink-0 flex flex-col items-center rounded-xl px-3 py-2.5 border transition-all min-w-[60px] ${isSelected ? 'bg-[#D4AF37] border-[#D4AF37] text-black' : 'border-[#2A2A2A] text-gray-400 hover:border-[#D4AF37]/50 hover:text-white'
+                            className={`flex-shrink-0 flex flex-col items-center rounded-xl px-3 py-2.5 border transition-all min-w-[60px] ${isSelected ? 'bg-[var(--gold)] border-[var(--gold)] text-black' : 'border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--gold)]/50 hover:text-[var(--text-primary)]'
                                 }`}
                         >
                             <span className="text-xs font-medium">{i === 0 ? 'Today' : format(date, 'EEE')}</span>
@@ -76,8 +76,8 @@ export default function StaffSchedulePage() {
             {/* Appointments */}
             {todayApts.length === 0 ? (
                 <div className="text-center py-20">
-                    <Calendar className="w-12 h-12 text-gray-700 mx-auto mb-3" />
-                    <p className="text-gray-500">No appointments for this day</p>
+                    <Calendar className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3 opacity-20" />
+                    <p className="text-[var(--text-muted)]">No appointments for this day</p>
                 </div>
             ) : (
                 <div className="space-y-3">
@@ -91,14 +91,14 @@ export default function StaffSchedulePage() {
                         >
                             <div className="flex items-center gap-3">
                                 <div className="text-center w-14 flex-shrink-0">
-                                    <div className="text-[#D4AF37] font-bold text-lg">{apt.timeSlot}</div>
-                                    <div className="text-xs text-gray-500">{apt.duration}min</div>
+                                    <div className="text-[var(--gold)] font-bold text-lg">{apt.timeSlot}</div>
+                                    <div className="text-xs text-[var(--text-muted)]">{apt.duration}min</div>
                                 </div>
-                                <div className="w-px h-10 bg-white/10" />
+                                <div className="w-px h-10 bg-[var(--border)]" />
                                 <div>
-                                    <div className="font-semibold text-white">{apt.customerName}</div>
-                                    <div className="text-sm text-gray-400">{apt.serviceName}</div>
-                                    <div className="text-xs text-gray-500">{apt.customerEmail}</div>
+                                    <div className="font-semibold text-[var(--text-primary)]">{apt.customerName}</div>
+                                    <div className="text-sm text-[var(--text-secondary)]">{apt.serviceName}</div>
+                                    <div className="text-xs text-[var(--text-muted)]">{apt.customerEmail}</div>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3 sm:ml-auto flex-wrap">
@@ -106,17 +106,22 @@ export default function StaffSchedulePage() {
                                 <span className={getStatusColor(apt.status)}>{apt.status}</span>
                                 {apt.status === 'Confirmed' && (
                                     <div className="flex gap-2">
-                                        <button onClick={() => handleUpdate(apt.id, 'Completed')} className="text-xs bg-green-500/10 text-green-400 border border-green-500/20 px-2.5 py-1 rounded-lg hover:bg-green-500/20 flex items-center gap-1">
-                                            <CheckCircle className="w-3 h-3" /> Done
+                                        <button onClick={() => handleUpdate(apt.id, 'In Progress')} className="text-xs bg-[var(--status-confirmed-bg)] text-[var(--status-confirmed)] border border-[var(--status-confirmed)]/20 px-2.5 py-1 rounded-lg hover:bg-[var(--status-confirmed-bg)]/20 flex items-center gap-1">
+                                            <Clock className="w-3 h-3" /> Start
                                         </button>
-                                        <button onClick={() => handleUpdate(apt.id, 'No Show')} className="text-xs bg-gray-500/10 text-gray-400 border border-gray-500/20 px-2.5 py-1 rounded-lg hover:bg-gray-500/20 flex items-center gap-1">
+                                        <button onClick={() => handleUpdate(apt.id, 'No Show')} className="text-xs bg-[var(--status-noshow-bg)] text-[var(--status-noshow)] border border-[var(--status-noshow)]/20 px-2.5 py-1 rounded-lg hover:bg-[var(--status-noshow-bg)]/20 flex items-center gap-1">
                                             <AlertCircle className="w-3 h-3" /> No-Show
                                         </button>
                                     </div>
                                 )}
+                                {apt.status === 'In Progress' && (
+                                    <button onClick={() => handleUpdate(apt.id, 'Completed')} className="text-xs bg-[var(--status-completed-bg)] text-[var(--status-completed)] border border-[var(--status-completed)]/20 px-2.5 py-1 rounded-lg hover:bg-[var(--status-completed-bg)]/20 flex items-center gap-1">
+                                        <CheckCircle className="w-3 h-3" /> Complete
+                                    </button>
+                                )}
                                 {apt.status === 'Pending' && (
-                                    <button onClick={() => handleUpdate(apt.id, 'Confirmed')} className="text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-1 rounded-lg hover:bg-blue-500/20 flex items-center gap-1">
-                                        <Clock className="w-3 h-3" /> Confirm
+                                    <button onClick={() => handleUpdate(apt.id, 'Confirmed')} className="text-xs bg-[var(--status-confirmed-bg)] text-[var(--status-confirmed)] border border-[var(--status-confirmed)]/20 px-2.5 py-1 rounded-lg hover:bg-[var(--status-confirmed-bg)]/20 flex items-center gap-1" title="Accept Booking">
+                                        Confirm
                                     </button>
                                 )}
                             </div>

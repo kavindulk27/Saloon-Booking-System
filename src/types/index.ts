@@ -55,7 +55,7 @@ export interface Staff {
 }
 
 // ==================== APPOINTMENT TYPES ====================
-export type AppointmentStatus = 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled' | 'No Show';
+export type AppointmentStatus = 'Pending' | 'Confirmed' | 'In Progress' | 'Completed' | 'Cancelled' | 'No Show';
 
 export interface Appointment {
     id: string;
@@ -78,8 +78,8 @@ export interface Appointment {
 }
 
 // ==================== PAYMENT TYPES ====================
-export type PaymentStatus = 'Unpaid' | 'Partial' | 'Paid' | 'Refunded';
-export type PaymentMethod = 'Cash' | 'Card' | 'Online';
+export type PaymentStatus = 'Unpaid' | 'Paid' | 'Refunded';
+export type PaymentMethod = 'Cash';
 
 export interface Payment {
     id: string;

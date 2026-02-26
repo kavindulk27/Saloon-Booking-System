@@ -21,8 +21,8 @@ export default function ProfilePage() {
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-8"
             >
-                <h1 className="font-serif text-4xl font-bold text-white mb-2">My Profile</h1>
-                <p className="text-gray-400">Manage your account settings and preferences</p>
+                <h1 className="font-serif text-4xl font-bold text-[var(--text-primary)] mb-2">My Profile</h1>
+                <p className="text-[var(--text-muted)]">Manage your account settings and preferences</p>
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -35,15 +35,15 @@ export default function ProfilePage() {
                 >
                     <div className="card-glass p-6 rounded-3xl text-center">
                         <div className="relative inline-block mb-4">
-                            <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#D4AF37] to-[#F0D060] flex items-center justify-center text-black text-3xl font-bold border-4 border-[#1A1A1A]">
+                            <div className="w-24 h-24 rounded-full bg-[var(--gold)] flex items-center justify-center text-black text-3xl font-bold border-4 border-[var(--bg-card)]">
                                 {getInitials(user.name)}
                             </div>
-                            <button className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#1A1A1A] border border-white/10 flex items-center justify-center text-[#D4AF37] hover:bg-white/5 transition-colors">
+                            <button className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[var(--bg-card)] border border-[var(--border)] flex items-center justify-center text-[var(--gold)] hover:bg-[var(--bg-glass)] transition-colors">
                                 <Edit2 className="w-4 h-4" />
                             </button>
                         </div>
-                        <h2 className="text-xl font-bold text-white mb-1">{user.name}</h2>
-                        <span className="text-xs text-[#D4AF37] bg-[#D4AF37]/10 px-3 py-1 rounded-full uppercase tracking-wider font-semibold">
+                        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-1">{user.name}</h2>
+                        <span className="text-xs text-[var(--gold)] bg-[var(--gold)]/10 px-3 py-1 rounded-full uppercase tracking-wider font-semibold">
                             {user.role} Account
                         </span>
 
@@ -53,7 +53,7 @@ export default function ProfilePage() {
                             </button>
                             <button
                                 onClick={handleLogout}
-                                className="w-full flex items-center justify-center gap-2 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 rounded-xl transition-all"
+                                className="w-full flex items-center justify-center gap-2 py-2.5 text-sm text-[var(--status-cancelled)] hover:brightness-110 hover:bg-[var(--status-cancelled-bg)] rounded-xl transition-all"
                             >
                                 <LogOut className="w-4 h-4" /> Log Out
                             </button>
@@ -69,46 +69,46 @@ export default function ProfilePage() {
                     className="md:col-span-2 space-y-6"
                 >
                     <div className="card-glass p-8 rounded-3xl">
-                        <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                            <User className="w-5 h-5 text-[#D4AF37]" /> Personal Information
+                        <h3 className="text-lg font-bold text-[var(--text-primary)] mb-6 flex items-center gap-2">
+                            <User className="w-5 h-5 text-[var(--gold)]" /> Personal Information
                         </h3>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div className="space-y-1">
-                                <label className="text-xs text-gray-500 uppercase tracking-widest font-semibold flex items-center gap-2">
+                                <label className="text-xs text-[var(--text-muted)] uppercase tracking-widest font-semibold flex items-center gap-2">
                                     <Mail className="w-3.5 h-3.5" /> Email Address
                                 </label>
-                                <p className="text-white bg-white/5 px-4 py-2.5 rounded-xl border border-white/5">{user.email}</p>
+                                <p className="text-[var(--text-primary)] bg-[var(--bg-glass)] px-4 py-2.5 rounded-xl border border-[var(--border)]">{user.email}</p>
                             </div>
                             <div className="space-y-1">
-                                <label className="text-xs text-gray-500 uppercase tracking-widest font-semibold flex items-center gap-2">
+                                <label className="text-xs text-[var(--text-muted)] uppercase tracking-widest font-semibold flex items-center gap-2">
                                     <Phone className="w-3.5 h-3.5" /> Phone Number
                                 </label>
-                                <p className="text-white bg-white/5 px-4 py-2.5 rounded-xl border border-white/5">+94 77 123 4567</p>
+                                <p className="text-[var(--text-primary)] bg-[var(--bg-glass)] px-4 py-2.5 rounded-xl border border-[var(--border)]">+94 77 123 4567</p>
                             </div>
                             <div className="space-y-1">
-                                <label className="text-xs text-gray-500 uppercase tracking-widest font-semibold flex items-center gap-2">
+                                <label className="text-xs text-[var(--text-muted)] uppercase tracking-widest font-semibold flex items-center gap-2">
                                     <Calendar className="w-3.5 h-3.5" /> Member Since
                                 </label>
-                                <p className="text-white bg-white/5 px-4 py-2.5 rounded-xl border border-white/5">January 2024</p>
+                                <p className="text-[var(--text-primary)] bg-[var(--bg-glass)] px-4 py-2.5 rounded-xl border border-[var(--border)]">January 2024</p>
                             </div>
                             <div className="space-y-1">
-                                <label className="text-xs text-gray-500 uppercase tracking-widest font-semibold flex items-center gap-2">
+                                <label className="text-xs text-[var(--text-muted)] uppercase tracking-widest font-semibold flex items-center gap-2">
                                     <MapPin className="w-3.5 h-3.5" /> Preferred Branch
                                 </label>
-                                <p className="text-white bg-white/5 px-4 py-2.5 rounded-xl border border-white/5">Colombo Main</p>
+                                <p className="text-[var(--text-primary)] bg-[var(--bg-glass)] px-4 py-2.5 rounded-xl border border-[var(--border)]">Colombo Main</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="card-glass p-8 rounded-3xl">
-                        <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                            <Shield className="w-5 h-5 text-[#D4AF37]" /> Security
+                        <h3 className="text-lg font-bold text-[var(--text-primary)] mb-6 flex items-center gap-2">
+                            <Shield className="w-5 h-5 text-[var(--gold)]" /> Security
                         </h3>
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-white font-medium">Password</p>
-                                <p className="text-xs text-gray-500 mt-1">Last changed 2 months ago</p>
+                                <p className="text-[var(--text-primary)] font-medium">Password</p>
+                                <p className="text-xs text-[var(--text-muted)] mt-1">Last changed 2 months ago</p>
                             </div>
                             <button className="btn-outline-gold px-4 py-2 text-xs">Update Password</button>
                         </div>

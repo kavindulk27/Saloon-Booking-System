@@ -35,6 +35,7 @@ export function getStatusColor(status: string): string {
     const map: Record<string, string> = {
         Pending: 'badge-pending',
         Confirmed: 'badge-confirmed',
+        'In Progress': 'badge-inprogress',
         Completed: 'badge-completed',
         Cancelled: 'badge-cancelled',
         'No Show': 'badge-noshow',
@@ -44,12 +45,11 @@ export function getStatusColor(status: string): string {
 
 export function getPaymentColor(status: string): string {
     const map: Record<string, string> = {
-        Paid: 'text-green-400',
-        Unpaid: 'text-red-400',
-        Partial: 'text-yellow-400',
-        Refunded: 'text-blue-400',
+        Paid: 'text-[var(--status-completed)]',
+        Unpaid: 'text-[var(--status-cancelled)]',
+        Refunded: 'text-[var(--status-confirmed)]',
     };
-    return map[status] || 'text-gray-400';
+    return map[status] || 'text-[var(--text-muted)]';
 }
 
 export function cn(...classes: (string | undefined | false | null)[]): string {
@@ -58,6 +58,12 @@ export function cn(...classes: (string | undefined | false | null)[]): string {
 
 export function getInitials(name: string): string {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+}
+
+export function generateBookingId(): string {
+    const today = format(new Date(), 'yyyyMMdd');
+    const random = Math.random().toString(36).substr(2, 4).toUpperCase();
+    return `BK-${today}-${random}`;
 }
 
 export function generateInvoiceId(): string {

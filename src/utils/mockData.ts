@@ -248,7 +248,7 @@ export const mockAppointments: Appointment[] = [
         duration: 60,
         status: 'Completed',
         paymentStatus: 'Paid',
-        paymentMethod: 'Card',
+        paymentMethod: 'Cash',
         createdAt: '2026-02-15T10:30:00Z',
     },
     {
@@ -265,8 +265,8 @@ export const mockAppointments: Appointment[] = [
         timeSlot: '08:00',
         duration: 120,
         status: 'Pending',
-        paymentStatus: 'Partial',
-        paymentMethod: 'Online',
+        paymentStatus: 'Unpaid',
+        paymentMethod: 'Cash',
         createdAt: '2026-02-22T14:00:00Z',
     },
     {
@@ -284,7 +284,7 @@ export const mockAppointments: Appointment[] = [
         duration: 60,
         status: 'Confirmed',
         paymentStatus: 'Paid',
-        paymentMethod: 'Online',
+        paymentMethod: 'Cash',
         createdAt: '2026-02-20T11:00:00Z',
     },
     {

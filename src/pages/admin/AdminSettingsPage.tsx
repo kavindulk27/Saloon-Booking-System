@@ -35,13 +35,13 @@ export default function AdminSettingsPage() {
     return (
         <div className="p-6 max-w-2xl">
             <div className="mb-8">
-                <h1 className="font-serif text-2xl font-bold text-white">Settings</h1>
-                <p className="text-gray-500 text-sm mt-0.5">Manage salon and account preferences</p>
+                <h1 className="font-serif text-2xl font-bold text-[var(--text-primary)]">Settings</h1>
+                <p className="text-[var(--text-muted)] text-sm mt-0.5">Manage salon and account preferences</p>
             </div>
 
             {/* Salon Info */}
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="card p-6 mb-5">
-                <h2 className="font-semibold text-white mb-4">Salon Information</h2>
+                <h2 className="font-semibold text-[var(--text-primary)] mb-4">Salon Information</h2>
                 <div className="space-y-3">
                     <div>
                         <label className="label">Salon Name</label>
@@ -79,17 +79,17 @@ export default function AdminSettingsPage() {
 
             {/* Notifications */}
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="card p-6 mb-5">
-                <h2 className="font-semibold text-white mb-4">Notifications</h2>
+                <h2 className="font-semibold text-[var(--text-primary)] mb-4">Notifications</h2>
                 <div className="space-y-4">
                     {toggles.map(t => (
                         <div key={t.label} className="flex items-center justify-between">
                             <div>
-                                <div className="text-sm text-white">{t.label}</div>
-                                <div className="text-xs text-gray-500">{t.desc}</div>
+                                <div className="text-sm text-[var(--text-primary)]">{t.label}</div>
+                                <div className="text-xs text-[var(--text-muted)]">{t.desc}</div>
                             </div>
                             <div
                                 onClick={() => t.set(!t.value)}
-                                className={`w-11 h-6 rounded-full cursor-pointer relative transition-colors ${t.value ? 'bg-[#D4AF37]' : 'bg-gray-600'}`}
+                                className={`w-11 h-6 rounded-full cursor-pointer relative transition-colors ${t.value ? 'bg-[var(--gold)]' : 'bg-[var(--bg-glass)] shadow-inner'}`}
                             >
                                 <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${t.value ? 'translate-x-6' : 'translate-x-1'}`} />
                             </div>
@@ -101,7 +101,7 @@ export default function AdminSettingsPage() {
 
             {/* Change Password */}
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="card p-6">
-                <h2 className="font-semibold text-white mb-4 flex items-center gap-2">
+                <h2 className="font-semibold text-[var(--text-primary)] mb-4 flex items-center gap-2">
                     <Lock className="w-4 h-4 text-[#D4AF37]" /> Change Password
                 </h2>
                 <div className="space-y-3">

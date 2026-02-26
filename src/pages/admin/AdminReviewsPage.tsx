@@ -29,15 +29,15 @@ export default function AdminReviewsPage() {
                 <div className="flex items-center gap-3 bg-[var(--bg-glass)] border border-[var(--border-glass)] px-4 py-3 rounded-2xl">
                     <div className="text-center border-r border-[var(--border-glass)] pr-4">
                         <div className="text-2xl font-bold text-[var(--gold)]">{averageRating}</div>
-                        <div className="text-[10px] text-gray-500 uppercase tracking-wider">Avg Rating</div>
+                        <div className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">Avg Rating</div>
                     </div>
                     <div className="pl-1">
                         <div className="flex gap-0.5 mb-1">
                             {[1, 2, 3, 4, 5].map(star => (
-                                <Star key={star} className={`w-3 h-3 ${star <= Math.round(Number(averageRating)) ? 'text-[var(--gold)] fill-[var(--gold)]' : 'text-gray-600'}`} />
+                                <Star key={star} className={`w-3 h-3 ${star <= Math.round(Number(averageRating)) ? 'text-[var(--gold)] fill-[var(--gold)]' : 'text-[var(--text-muted)] opacity-30'}`} />
                             ))}
                         </div>
-                        <div className="text-[10px] text-gray-500">{reviews.length} Total Reviews</div>
+                        <div className="text-[10px] text-[var(--text-muted)]">{reviews.length} Total Reviews</div>
                     </div>
                 </div>
             </div>
@@ -54,8 +54,8 @@ export default function AdminReviewsPage() {
                             key={r}
                             onClick={() => setFilterRating(r as any)}
                             className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${filterRating === r
-                                    ? 'bg-[var(--gold)] text-black shadow-[0_0_15px_rgba(212,175,55,0.3)]'
-                                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                                ? 'bg-[var(--gold)] text-black shadow-[0_0_15px_rgba(212,175,55,0.3)]'
+                                : 'bg-[var(--bg-glass)] text-[var(--text-muted)] hover:bg-[var(--bg-glass)] hover:text-[var(--text-primary)]'
                                 }`}
                         >
                             {r === 'All' ? 'All' : `${r} Star`}
@@ -80,12 +80,12 @@ export default function AdminReviewsPage() {
                     >
                         <div className="flex justify-between items-start mb-4">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-[var(--gold)]/30 transition-colors">
-                                    <User className="w-5 h-5 text-gray-400" />
+                                <div className="w-10 h-10 rounded-full bg-[var(--bg-glass)] flex items-center justify-center border border-[var(--border)] group-hover:border-[var(--gold)]/30 transition-colors">
+                                    <User className="w-5 h-5 text-[var(--text-muted)]" />
                                 </div>
                                 <div>
-                                    <h3 className="font-semibold text-white text-sm">{r.customerName}</h3>
-                                    <div className="flex items-center gap-1.5 text-[10px] text-gray-500">
+                                    <h3 className="font-semibold text-[var(--text-primary)] text-sm">{r.customerName}</h3>
+                                    <div className="flex items-center gap-1.5 text-[10px] text-[var(--text-muted)]">
                                         <Calendar className="w-3 h-3" /> {formatDate(r.createdAt)}
                                     </div>
                                 </div>
@@ -94,7 +94,7 @@ export default function AdminReviewsPage() {
                                 {[1, 2, 3, 4, 5].map(star => (
                                     <Star
                                         key={star}
-                                        className={`w-3.5 h-3.5 ${star <= r.rating ? 'text-[var(--gold)] fill-[var(--gold)]' : 'text-gray-700'}`}
+                                        className={`w-3.5 h-3.5 ${star <= r.rating ? 'text-[var(--gold)] fill-[var(--gold)]' : 'text-[var(--text-muted)] opacity-20'}`}
                                     />
                                 ))}
                             </div>
@@ -107,7 +107,7 @@ export default function AdminReviewsPage() {
                             </span>
                         </div>
 
-                        <p className="text-gray-400 text-sm italic leading-relaxed">
+                        <p className="text-[var(--text-secondary)] text-sm italic leading-relaxed">
                             "{r.comment}"
                         </p>
                     </motion.div>

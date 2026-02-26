@@ -8,7 +8,6 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ServicesPage from './pages/ServicesPage';
-import BookingPage from './pages/BookingPage';
 import MyAppointmentsPage from './pages/MyAppointmentsPage';
 import ProfilePage from './pages/ProfilePage';
 import GalleryPage from './pages/GalleryPage';
@@ -88,7 +87,6 @@ export default function App() {
           <Route path="/register" element={<PublicOnlyRoute><RegisterPage /></PublicOnlyRoute>} />
 
           {/* Customer */}
-          <Route path="/book" element={<PrivateRoute allowedRoles={['customer']}><BookingPage /></PrivateRoute>} />
           <Route path="/my-appointments" element={<PrivateRoute allowedRoles={['customer']}><MyAppointmentsPage /></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute allowedRoles={['customer']}><ProfilePage /></PrivateRoute>} />
 

@@ -29,8 +29,8 @@ export default function AdminLeavePage() {
         <div className="p-6 max-w-7xl mx-auto">
             <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="font-serif text-2xl font-bold text-white">Leave Requests</h1>
-                    <p className="text-gray-500 text-sm mt-1">Review and manage staff time-off requests</p>
+                    <h1 className="font-serif text-2xl font-bold text-[var(--text-primary)]">Leave Requests</h1>
+                    <p className="text-[var(--text-muted)] text-sm mt-1">Review and manage staff time-off requests</p>
                 </div>
 
                 <div className="flex gap-2">
@@ -39,8 +39,8 @@ export default function AdminLeavePage() {
                             key={s}
                             onClick={() => setFilterStatus(s as any)}
                             className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${filterStatus === s
-                                    ? 'bg-[var(--gold)] text-black'
-                                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                                ? 'bg-[var(--gold)] text-black'
+                                : 'bg-[var(--bg-glass)] text-[var(--text-muted)] hover:bg-[var(--bg-glass)] hover:text-[var(--text-primary)]'
                                 }`}
                         >
                             {s}
@@ -51,7 +51,7 @@ export default function AdminLeavePage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
                 {filtered.length === 0 ? (
-                    <div className="card p-20 text-center text-gray-500 border-dashed">
+                    <div className="card p-20 text-center text-[var(--text-muted)] border-dashed">
                         <Calendar className="w-16 h-16 mx-auto mb-4 opacity-10" />
                         <p>No leave requests found</p>
                     </div>
@@ -64,8 +64,8 @@ export default function AdminLeavePage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.05 }}
                                 className={`card p-6 border-l-4 transition-all ${l.status === 'Approved' ? 'border-l-green-500' :
-                                        l.status === 'Rejected' ? 'border-l-red-500' :
-                                            'border-l-amber-500'
+                                    l.status === 'Rejected' ? 'border-l-red-500' :
+                                        'border-l-amber-500'
                                     }`}
                             >
                                 <div className="flex flex-col md:flex-row gap-6">
@@ -75,41 +75,41 @@ export default function AdminLeavePage() {
                                                 {l.staffName[0]}
                                             </div>
                                             <div>
-                                                <h3 className="font-bold text-white">{l.staffName}</h3>
-                                                <div className="text-[10px] text-gray-500 uppercase tracking-widest">Staff Member</div>
+                                                <h3 className="font-bold text-[var(--text-primary)]">{l.staffName}</h3>
+                                                <div className="text-[10px] text-[var(--text-muted)] uppercase tracking-widest">Staff Member</div>
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
                                             <div>
-                                                <div className="text-[10px] text-gray-500 uppercase mb-1">Period</div>
-                                                <div className="text-sm text-gray-300 font-medium">
+                                                <div className="text-[10px] text-[var(--text-muted)] uppercase mb-1">Period</div>
+                                                <div className="text-sm text-[var(--text-secondary)] font-medium">
                                                     {formatDate(l.startDate)} - {formatDate(l.endDate)}
                                                 </div>
                                             </div>
                                             <div>
-                                                <div className="text-[10px] text-gray-500 uppercase mb-1">Applied On</div>
-                                                <div className="text-sm text-gray-300">
+                                                <div className="text-[10px] text-[var(--text-muted)] uppercase mb-1">Applied On</div>
+                                                <div className="text-sm text-[var(--text-secondary)]">
                                                     {formatDate(l.appliedAt)}
                                                 </div>
                                             </div>
                                             <div className="md:col-span-1">
-                                                <div className="text-[10px] text-gray-500 uppercase mb-1">Status</div>
-                                                <div className={`text-sm font-bold ${l.status === 'Approved' ? 'text-green-400' :
-                                                        l.status === 'Rejected' ? 'text-red-400' :
-                                                            'text-amber-400'
+                                                <div className="text-[10px] text-[var(--text-muted)] uppercase mb-1">Status</div>
+                                                <div className={`text-sm font-bold ${l.status === 'Approved' ? 'text-green-500' :
+                                                    l.status === 'Rejected' ? 'text-red-500' :
+                                                        'text-amber-500'
                                                     }`}>
                                                     {l.status}
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="mt-4">
-                                            <div className="text-[10px] text-gray-500 uppercase mb-1">Reason</div>
-                                            <p className="text-sm text-gray-400 italic">"{l.reason}"</p>
+                                            <div className="text-[10px] text-[var(--text-muted)] uppercase mb-1">Reason</div>
+                                            <p className="text-sm text-[var(--text-secondary)] italic">"{l.reason}"</p>
                                         </div>
                                         {l.adminComment && (
-                                            <div className="mt-4 p-3 rounded-lg bg-white/5 border border-white/10">
+                                            <div className="mt-4 p-3 rounded-lg bg-[var(--bg-glass)] border border-[var(--border)]">
                                                 <div className="text-[10px] text-[var(--gold)] font-bold uppercase mb-1">Admin Comment</div>
-                                                <p className="text-xs text-gray-500">{l.adminComment}</p>
+                                                <p className="text-xs text-[var(--text-muted)]">{l.adminComment}</p>
                                             </div>
                                         )}
                                     </div>
@@ -140,7 +140,7 @@ export default function AdminLeavePage() {
                                                     </div>
                                                     <button
                                                         onClick={() => { setSelectedRequest(null); setAdminComment(''); }}
-                                                        className="w-full text-[10px] text-gray-500 hover:text-white transition-colors"
+                                                        className="w-full text-[10px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                                                     >
                                                         Cancel action
                                                     </button>
@@ -148,10 +148,10 @@ export default function AdminLeavePage() {
                                             ) : (
                                                 <button
                                                     onClick={() => setSelectedRequest(l.id)}
-                                                    className="w-full h-full min-h-[100px] border border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-white/5 hover:border-[var(--gold)]/30 transition-all group"
+                                                    className="w-full h-full min-h-[100px] border border-dashed border-[var(--border)] rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-[var(--bg-glass)] hover:border-[var(--gold)]/30 transition-all group"
                                                 >
-                                                    <MessageSquare className="w-6 h-6 text-gray-600 group-hover:text-[var(--gold)] transition-colors" />
-                                                    <span className="text-xs font-medium text-gray-500 group-hover:text-white">Review Request</span>
+                                                    <MessageSquare className="w-6 h-6 text-[var(--text-muted)] group-hover:text-[var(--gold)] transition-colors" />
+                                                    <span className="text-xs font-medium text-[var(--text-muted)] group-hover:text-[var(--text-primary)]">Review Request</span>
                                                 </button>
                                             )}
                                         </div>

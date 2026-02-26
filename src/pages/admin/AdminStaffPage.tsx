@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Edit2, Trash2, Search, X, Check, Star } from 'lucide-react';
-import { mockStaff } from '../../utils/mockData';
+import { useStaffStore } from '../../store/useStaffStore';
 import type { Staff, ServiceCategory, DayOfWeek } from '../../types';
 import toast from 'react-hot-toast';
 
@@ -9,7 +9,7 @@ const DAYS: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday
 const CATEGORIES: ServiceCategory[] = ['Hair', 'Facial', 'Bridal', 'Nails', 'Massage', 'Makeup'];
 
 export default function AdminStaffPage() {
-    const [staff, setStaff] = useState<Staff[]>([...mockStaff]);
+    const { staff, addStaff, updateStaff, deleteStaff } = useStaffStore();
     const [search, setSearch] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState<Staff | null>(null);
@@ -57,17 +57,17 @@ export default function AdminStaffPage() {
     const handleSave = () => {
         if (!form.name || !form.email) { toast.error('Name and email are required'); return; }
         if (editing) {
-            setStaff(prev => prev.map(s => s.id === editing.id ? { ...editing, ...form } as Staff : s));
+            updateStaff(editing.id, form);
             toast.success('Staff updated');
         } else {
-            setStaff(prev => [{ id: `s${Date.now()}`, ...form } as Staff, ...prev]);
+            addStaff({ id: `s${Date.now()}`, ...form } as Staff);
             toast.success('Staff added');
         }
         setShowModal(false);
     };
 
     const handleDelete = (id: string) => {
-        setStaff(prev => prev.filter(s => s.id !== id));
+        deleteStaff(id);
         toast.success('Staff removed');
     };
 
@@ -75,17 +75,17 @@ export default function AdminStaffPage() {
         <div className="p-6 max-w-7xl">
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="font-serif text-2xl font-bold text-white">Staff Management</h1>
-                    <p className="text-gray-500 text-sm mt-0.5">{staff.length} staff members</p>
+                    <h1 className="font-serif text-2xl font-bold text-[var(--text-primary)]">Staff Management</h1>
+                    <p className="text-[var(--text-muted)] text-sm mt-0.5">{staff.length} staff members</p>
                 </div>
                 <button onClick={openAdd} className="btn-gold flex items-center gap-2 text-sm">
                     <Plus className="w-4 h-4" /> Add Staff
                 </button>
             </div>
 
-            <div className="relative max-w-sm mb-5">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search staff..." className="input-field pl-10" />
+            <div className="relative w-full sm:max-w-sm mb-5">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+                <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search staff..." className="input-field pl-10 w-full" />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -103,49 +103,49 @@ export default function AdminStaffPage() {
                                     {s.name.split(' ').map(n => n[0]).join('')}
                                 </div>
                                 <div>
-                                    <div className="font-semibold text-white">{s.name}</div>
-                                    <div className="text-xs text-gray-500">{s.email}</div>
+                                    <div className="font-semibold text-[var(--text-primary)]">{s.name}</div>
+                                    <div className="text-xs text-[var(--text-muted)]">{s.email}</div>
                                 </div>
                             </div>
-                            <div className={`w-2.5 h-2.5 rounded-full mt-1 ${s.isOnLeave ? 'bg-red-400' : 'bg-green-400'}`} />
+                            <div className={`w-2.5 h-2.5 rounded-full mt-1 ${s.isOnLeave ? 'bg-[var(--status-cancelled)]' : 'bg-[var(--status-completed)]'}`} />
                         </div>
 
                         <div className="flex flex-wrap gap-1 mb-3">
                             {s.specializations.map(spec => (
-                                <span key={spec} className="text-xs bg-[#D4AF37]/10 text-[#D4AF37] px-2 py-0.5 rounded-full">{spec}</span>
+                                <span key={spec} className="text-xs bg-[var(--gold)]/10 text-[var(--gold)] px-2 py-0.5 rounded-full">{spec}</span>
                             ))}
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3 text-xs text-gray-400 mb-4">
+                        <div className="grid grid-cols-2 gap-3 text-xs text-[var(--text-muted)] mb-4">
                             <div>
-                                <div className="text-gray-600 mb-0.5">Hours</div>
-                                <div>{s.workingHours.start} - {s.workingHours.end}</div>
+                                <div className="text-[var(--text-muted)] opacity-60 mb-0.5">Hours</div>
+                                <div className="text-[var(--text-secondary)]">{s.workingHours.start} - {s.workingHours.end}</div>
                             </div>
                             <div>
-                                <div className="text-gray-600 mb-0.5">Commission</div>
-                                <div>{s.commissionPercentage}%</div>
+                                <div className="text-[var(--text-muted)] opacity-60 mb-0.5">Commission</div>
+                                <div className="text-[var(--text-secondary)]">{s.commissionPercentage}%</div>
                             </div>
                             <div>
-                                <div className="text-gray-600 mb-0.5">Rating</div>
-                                <div className="flex items-center gap-1"><Star className="w-3 h-3 text-[#D4AF37] fill-[#D4AF37]" />{s.rating}</div>
+                                <div className="text-[var(--text-muted)] opacity-60 mb-0.5">Rating</div>
+                                <div className="flex items-center gap-1 text-[var(--text-secondary)]"><Star className="w-3 h-3 text-[#D4AF37] fill-[#D4AF37]" />{s.rating}</div>
                             </div>
                             <div>
-                                <div className="text-gray-600 mb-0.5">Total Jobs</div>
-                                <div>{s.totalAppointments}</div>
+                                <div className="text-[var(--text-muted)] opacity-60 mb-0.5">Total Jobs</div>
+                                <div className="text-[var(--text-secondary)]">{s.totalAppointments}</div>
                             </div>
                         </div>
 
                         {s.isOnLeave && (
-                            <div className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 mb-3">
+                            <div className="text-xs text-[var(--status-cancelled)] bg-[var(--status-cancelled-bg)] border border-[var(--status-cancelled)]/20 rounded-lg px-3 py-2 mb-3">
                                 On Leave until {s.leaveUntil}
                             </div>
                         )}
 
-                        <div className="flex gap-2 border-t border-white/10 pt-3">
+                        <div className="flex gap-2 border-t border-[var(--border)] pt-3">
                             <button onClick={() => openEdit(s)} className="btn-ghost flex-1 text-xs flex items-center justify-center gap-1.5">
                                 <Edit2 className="w-3 h-3" /> Edit
                             </button>
-                            <button onClick={() => handleDelete(s.id)} className="text-xs flex-1 px-3 py-2 rounded-lg text-red-400 hover:bg-red-500/10 flex items-center justify-center gap-1.5 transition-all">
+                            <button onClick={() => handleDelete(s.id)} className="text-xs flex-1 px-3 py-2 rounded-lg text-[var(--status-cancelled)] hover:bg-[var(--status-cancelled-bg)] flex items-center justify-center gap-1.5 transition-all">
                                 <Trash2 className="w-3 h-3" /> Remove
                             </button>
                         </div>
@@ -167,11 +167,11 @@ export default function AdminStaffPage() {
                             initial={{ scale: 0.95, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.95, opacity: 0 }}
-                            className="bg-[#1E1E1E] border border-white/10 rounded-2xl w-full max-w-lg p-6 shadow-2xl max-h-[90vh] overflow-y-auto scrollbar-hide"
+                            className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl w-full max-w-lg p-6 shadow-2xl max-h-[90vh] overflow-y-auto scrollbar-hide"
                         >
                             <div className="flex items-center justify-between mb-5">
-                                <h2 className="font-semibold text-white">{editing ? 'Edit Staff' : 'Add Staff'}</h2>
-                                <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
+                                <h2 className="font-semibold text-[var(--text-primary)]">{editing ? 'Edit Staff' : 'Add Staff'}</h2>
+                                <button onClick={() => setShowModal(false)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]"><X className="w-5 h-5" /></button>
                             </div>
 
                             <div className="space-y-4">
@@ -198,7 +198,7 @@ export default function AdminStaffPage() {
                                                 key={cat}
                                                 type="button"
                                                 onClick={() => toggleSpec(cat)}
-                                                className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${(form.specializations || []).includes(cat) ? 'bg-[#D4AF37] border-[#D4AF37] text-black' : 'border-white/10 text-gray-400 hover:text-white'}`}
+                                                className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${(form.specializations || []).includes(cat) ? 'bg-[#D4AF37] border-[#D4AF37] text-black' : 'border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
                                             >
                                                 {cat}
                                             </button>
@@ -244,7 +244,7 @@ export default function AdminStaffPage() {
                                     >
                                         <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.isOnLeave ? 'translate-x-5' : 'translate-x-0.5'}`} />
                                     </div>
-                                    <span className="text-sm text-gray-300">On Leave</span>
+                                    <span className="text-sm text-[var(--text-secondary)]">On Leave</span>
                                 </label>
                                 {form.isOnLeave && (
                                     <div>
