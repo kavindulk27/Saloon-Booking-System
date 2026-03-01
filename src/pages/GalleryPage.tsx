@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Maximize2, Camera, Filter } from 'lucide-react';
 import { mockGallery } from '../utils/mockData';
 
-const CATEGORIES = ['All', 'Hair', 'Makeup', 'Bridal', 'Facial', 'Nails'];
+const CATEGORIES = ['All', 'Hair', 'Makeup', 'Bridal', 'Facial', 'Nails', 'Massage'];
 
 export default function GalleryPage() {
     const [filter, setFilter] = useState('All');

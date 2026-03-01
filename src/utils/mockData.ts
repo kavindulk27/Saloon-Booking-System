@@ -409,52 +409,159 @@ export const mockLeaveRequests: LeaveRequest[] = [
 ];
 
 export const mockGallery = [
-    {
-        id: 'g1',
-        title: 'Elegant Bridal Makeup',
-        category: 'Bridal',
-        image: 'https://images.unsplash.com/photo-1594463750939-f6ad2a7144e1?q=80&w=800&auto=format',
-    },
+    // --- HAIR CATEGORY (Freepik) ---
     {
         id: 'g2',
-        title: 'Modern Pixie Cut',
+        title: 'Modern Afro-American Model',
         category: 'Hair',
-        image: 'https://images.unsplash.com/photo-1560869713-7d0a294308ed?q=80&w=800&auto=format',
-    },
-    {
-        id: 'g3',
-        title: 'Luxury Gold Facial',
-        category: 'Facial',
-        image: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?q=80&w=800&auto=format',
-    },
-    {
-        id: 'g4',
-        title: 'Nail Art Masterpiece',
-        category: 'Nails',
-        image: 'https://images.unsplash.com/photo-1604654894610-df490982700d?q=80&w=800&auto=format',
+        image: 'https://img.freepik.com/free-photo/afro-american-woman-model-studio_1303-13587.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
     },
     {
         id: 'g5',
-        title: 'Boho Braided Style',
+        title: 'Professional Haircut in Progress',
         category: 'Hair',
-        image: 'https://images.unsplash.com/photo-1519699047748-de8e457a634e?q=80&w=800&auto=format',
-    },
-    {
-        id: 'g6',
-        title: 'Red Carpet Glamour',
-        category: 'Makeup',
-        image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=800&auto=format',
-    },
-    {
-        id: 'g7',
-        title: 'Traditional Wedding Look',
-        category: 'Bridal',
-        image: 'https://images.unsplash.com/photo-1595152244501-995bc9a0cd47?q=80&w=800&auto=format',
+        image: 'https://img.freepik.com/free-photo/beautiful-woman-has-cutting-hair-hairdresser_329181-1942.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
     },
     {
         id: 'g8',
-        title: 'Soft Balayage',
+        title: 'Blow Dry & Styling',
         category: 'Hair',
-        image: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=800&auto=format',
+        image: 'https://img.freepik.com/free-photo/female-hairdresser-using-hairbrush-hair-dryer_329181-1929.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+    {
+        id: 'g14',
+        title: 'Hair Wash Service',
+        category: 'Hair',
+        image: 'https://img.freepik.com/free-photo/customer-getting-wash-after-haircut_23-2148256876.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+
+    // --- BRIDAL CATEGORY (Freepik) ---
+    {
+        id: 'g1',
+        title: 'Bridal Makeup Portrait',
+        category: 'Bridal',
+        image: 'https://img.freepik.com/free-photo/female-model-wedding-bridal-makeup_114579-9312.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+    {
+        id: 'g11',
+        title: 'Bride with Royal Jewelry',
+        category: 'Bridal',
+        image: 'https://img.freepik.com/free-photo/female-model-wedding-bridal-makeup-demonstrating-jewelry_114579-9311.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+    {
+        id: 'g7',
+        title: 'Stylish Bride in Gown',
+        category: 'Bridal',
+        image: 'https://img.freepik.com/free-photo/young-beautiful-stylish-woman-wedding-dress_285396-7880.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+    {
+        id: 'g16',
+        title: 'Happy Bride Portrait',
+        category: 'Bridal',
+        image: 'https://img.freepik.com/free-photo/portrait-beautiful-happy-bride-with-wedding-makeup-wedding-hairstyle_8353-5815.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+
+    // --- NAILS CATEGORY (Freepik) ---
+    {
+        id: 'g4',
+        title: 'Elegant Manicure',
+        category: 'Nails',
+        image: 'https://img.freepik.com/free-photo/hands-with-beautiful-nails_23-2149936852.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+    {
+        id: 'g13',
+        title: 'Creative Nail Art Collage',
+        category: 'Nails',
+        image: 'https://img.freepik.com/free-photo/women-with-colorful-creative-nail-art-collage_23-2149936866.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+    {
+        id: 'g15_nails',
+        title: 'Vibrant Creative Nails',
+        category: 'Nails',
+        image: 'https://img.freepik.com/free-photo/women-with-colorful-creative-nail-art_23-2149936865.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+    {
+        id: 'g17_nails',
+        title: 'Professional Nail Application',
+        category: 'Nails',
+        image: 'https://img.freepik.com/free-photo/close-up-beautician-painting-woman-s-nails-with-brush-nail-salon_1139-1703.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+
+    // --- MAKEUP CATEGORY (Freepik) ---
+    {
+        id: 'g6',
+        title: 'Professional Makeup Application',
+        category: 'Makeup',
+        image: 'https://img.freepik.com/free-photo/professional-makeup-artist-working-with-young-woman_23-2148113098.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+    {
+        id: 'g19_makeup',
+        title: 'Artist with Color Palette',
+        category: 'Makeup',
+        image: 'https://img.freepik.com/free-photo/crop-makeup-artist-with-palette-working-with-model_23-2147783935.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+    {
+        id: 'g20_makeup',
+        title: 'Studio Makeup Session',
+        category: 'Makeup',
+        image: 'https://img.freepik.com/free-photo/makeup-artist-working-with-model-studio_23-2148113103.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+    {
+        id: 'g21_makeup',
+        title: 'Detailed Makeup Technique',
+        category: 'Makeup',
+        image: 'https://img.freepik.com/free-photo/professional-makeup-artist-working_23-2148398598.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+
+    // --- FACIAL CATEGORY (Freepik) ---
+    {
+        id: 'g3',
+        title: 'Beauty Mask Application',
+        category: 'Facial',
+        image: 'https://img.freepik.com/free-photo/beautiful-woman-getting-beauty-treatment_329181-18790.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+    {
+        id: 'g22_facial',
+        title: 'Professional Salon Facial',
+        category: 'Facial',
+        image: 'https://img.freepik.com/free-photo/cosmetologist-applying-mask-face-client-beauty-salon_1303-16770.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+    {
+        id: 'g23_facial',
+        title: 'Relaxing Facial Treatment',
+        category: 'Facial',
+        image: 'https://img.freepik.com/free-photo/woman-relaxing-spa_329181-13154.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+    {
+        id: 'g24_facial',
+        title: 'Premium Spa Experience',
+        category: 'Facial',
+        image: 'https://img.freepik.com/free-photo/young-woman-mask-face-relaxing-spa-salon_176420-7579.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+
+    // --- MASSAGE CATEGORY (Freepik) ---
+    {
+        id: 'g9',
+        title: 'Tranquil Spa Massage',
+        category: 'Massage',
+        image: 'https://img.freepik.com/free-photo/relaxing-spa-concept-with-woman_23-2147816920.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+    {
+        id: 'g10',
+        title: 'Therapeutic Massage Session',
+        category: 'Massage',
+        image: 'https://img.freepik.com/free-photo/spa-massage-concept-with-woman_23-2147817035.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+    {
+        id: 'g25_massage',
+        title: 'Professional Spa Treatment',
+        category: 'Massage',
+        image: 'https://img.freepik.com/free-photo/front-view-woman-working-spa_23-2150911820.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
+    },
+    {
+        id: 'g26_massage',
+        title: 'Deep Tissue Therapy',
+        category: 'Massage',
+        image: 'https://img.freepik.com/free-photo/front-view-woman-working-spa_23-2150911815.jpg?uid=R214336655&ga=GA1.1.798508197.1772377356&semt=ais_hybrid&w=740&q=80',
     }
 ];

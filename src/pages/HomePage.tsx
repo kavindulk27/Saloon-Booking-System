@@ -123,7 +123,7 @@ export default function HomePage() {
                     >
                         <div className="relative z-10 rounded-[2rem] lg:rounded-[3rem] overflow-hidden border border-[var(--border)] shadow-2xl aspect-[16/9] sm:aspect-[4/3] lg:aspect-[4/5] bg-[var(--bg-secondary)] group">
                             <img
-                                src="https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=800&auto=format"
+                                src="https://img.freepik.com/free-photo/modern-beauty-salon-interior_23-2148910541.jpg?w=1200&q=80"
                                 className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700"
                                 alt="Studio Experience"
                             />
