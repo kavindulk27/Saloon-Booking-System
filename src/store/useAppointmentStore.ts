@@ -1,73 +1,88 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {
+    collection,
+    addDoc,
+    updateDoc,
+    doc,
+    onSnapshot,
+    query,
+    orderBy,
+    serverTimestamp
+} from 'firebase/firestore';
+import { db } from '../lib/firebase';
 import type { Appointment, AppointmentStatus, PaymentStatus } from '../types';
-import { mockAppointments } from '../utils/mockData';
 
 interface AppointmentState {
     appointments: Appointment[];
-    addAppointment: (apt: Appointment) => void;
-    updateStatus: (id: string, status: AppointmentStatus) => void;
-    updatePaymentStatus: (id: string, status: PaymentStatus) => void;
-    cancelAppointment: (id: string) => void;
+    addAppointment: (apt: Omit<Appointment, 'id' | 'createdAt'>) => Promise<void>;
+    updateStatus: (id: string, status: AppointmentStatus) => Promise<void>;
+    updatePaymentStatus: (id: string, status: PaymentStatus) => Promise<void>;
+    cancelAppointment: (id: string) => Promise<void>;
     getByCustomer: (customerId: string) => Appointment[];
     getByStaff: (staffId: string) => Appointment[];
     getByDate: (date: string) => Appointment[];
     isSlotTaken: (staffId: string, date: string, timeSlot: string, excludeId?: string) => boolean;
+    init: () => void;
 }
 
-export const useAppointmentStore = create<AppointmentState>()(
-    persist(
-        (set, get) => ({
-            appointments: [...mockAppointments],
+export const useAppointmentStore = create<AppointmentState>()((set, get) => ({
+    appointments: [],
 
-            addAppointment: (apt) => {
-                set(state => ({ appointments: [apt, ...state.appointments] }));
-            },
+    init: () => {
+        const q = query(collection(db, 'appointments'), orderBy('date', 'desc'));
+        onSnapshot(q, (snapshot) => {
+            const appointments = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            } as Appointment));
+            set({ appointments });
+        });
+    },
 
-            updateStatus: (id, status) => {
-                set(state => ({
-                    appointments: state.appointments.map(a => a.id === id ? { ...a, status } : a),
-                }));
-            },
+    addAppointment: async (apt) => {
+        await addDoc(collection(db, 'appointments'), {
+            ...apt,
+            createdAt: new Date().toISOString(), // Fallback or use serverTimestamp
+        });
+    },
 
-            updatePaymentStatus: (id, status) => {
-                set(state => ({
-                    appointments: state.appointments.map(a => a.id === id ? { ...a, paymentStatus: status } : a),
-                }));
-            },
+    updateStatus: async (id, status) => {
+        await updateDoc(doc(db, 'appointments', id), { status });
+    },
 
-            cancelAppointment: (id) => {
-                set(state => ({
-                    appointments: state.appointments.map(a =>
-                        a.id === id ? { ...a, status: 'Cancelled', paymentStatus: 'Refunded' } : a
-                    ),
-                }));
-            },
+    updatePaymentStatus: async (id, paymentStatus) => {
+        await updateDoc(doc(db, 'appointments', id), { paymentStatus });
+    },
 
-            getByCustomer: (customerId) => {
-                return get().appointments.filter(a => a.customerId === customerId);
-            },
+    cancelAppointment: async (id) => {
+        await updateDoc(doc(db, 'appointments', id), {
+            status: 'Cancelled',
+            paymentStatus: 'Refunded'
+        });
+    },
 
-            getByStaff: (staffId) => {
-                return get().appointments.filter(a => a.staffId === staffId);
-            },
+    getByCustomer: (customerId) => {
+        return get().appointments.filter(a => a.customerId === customerId);
+    },
 
-            getByDate: (date) => {
-                return get().appointments.filter(a => a.date === date);
-            },
+    getByStaff: (staffId) => {
+        return get().appointments.filter(a => a.staffId === staffId);
+    },
 
-            isSlotTaken: (staffId, date, timeSlot, excludeId) => {
-                return get().appointments.some(a =>
-                    a.staffId === staffId &&
-                    a.date === date &&
-                    a.timeSlot === timeSlot &&
-                    a.status !== 'Cancelled' &&
-                    a.id !== excludeId
-                );
-            },
-        }),
-        {
-            name: 'saloon-appointments',
-        }
-    )
-);
+    getByDate: (date) => {
+        return get().appointments.filter(a => a.date === date);
+    },
+
+    isSlotTaken: (staffId, date, timeSlot, excludeId) => {
+        return get().appointments.some(a =>
+            a.staffId === staffId &&
+            a.date === date &&
+            a.timeSlot === timeSlot &&
+            a.status !== 'Cancelled' &&
+            a.id !== excludeId
+        );
+    },
+}));
+
+// Auto-initialize
+useAppointmentStore.getState().init();

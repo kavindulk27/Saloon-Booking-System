@@ -52,7 +52,7 @@ export default function RegisterPage() {
                     transition={{ delay: 0.1 }}
                     className="card-glass p-6 rounded-2xl"
                 >
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
                         <div>
                             <label className="label text-[var(--text-secondary)]">Full Name</label>
                             <div className="relative">
@@ -64,6 +64,7 @@ export default function RegisterPage() {
                                     placeholder="John Doe"
                                     className="input-field pl-10"
                                     required
+                                    autoComplete="off"
                                 />
                             </div>
                         </div>
@@ -79,6 +80,7 @@ export default function RegisterPage() {
                                     placeholder="john@example.com"
                                     className="input-field pl-10"
                                     required
+                                    autoComplete="off"
                                 />
                             </div>
                         </div>
@@ -94,6 +96,7 @@ export default function RegisterPage() {
                                     placeholder="+94 77 123 4567"
                                     className="input-field pl-10"
                                     required
+                                    autoComplete="off"
                                 />
                             </div>
                         </div>
@@ -110,6 +113,7 @@ export default function RegisterPage() {
                                     className="input-field pl-10 pr-10"
                                     required
                                     minLength={8}
+                                    autoComplete="off"
                                 />
                                 <button
                                     type="button"
@@ -128,13 +132,6 @@ export default function RegisterPage() {
                             </div>
                         )}
 
-                        <div className="flex items-center gap-2 py-2">
-                            <input type="checkbox" id="terms" className="accent-[var(--gold)]" required />
-                            <label htmlFor="terms" className="text-xs text-[var(--text-muted)]">
-                                I agree to the <Link to="/terms" className="text-[var(--gold)]">Terms of Service</Link> and <Link to="/privacy" className="text-[var(--gold)]">Privacy Policy</Link>
-                            </label>
-                        </div>
-
                         <button
                             type="submit"
                             disabled={isLoading}
@@ -151,7 +148,7 @@ export default function RegisterPage() {
                     <div className="mt-6 text-center">
                         <p className="text-[var(--text-muted)] text-sm">
                             Already have an account?{' '}
-                            <Link to="/admin" className="text-[var(--gold)] hover:text-[var(--gold)]/80 font-medium transition-colors">
+                            <Link to="/login" className="text-[var(--gold)] hover:text-[var(--gold)]/80 font-medium transition-colors">
                                 Sign in
                             </Link>
                         </p>

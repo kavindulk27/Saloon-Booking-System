@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, Check, XCircle, AlertCircle, Search, Filter } from 'lucide-react';
+import { Calendar, Clock, Check, XCircle, AlertCircle, Search, Filter, MessageCircle } from 'lucide-react';
 import { useAppointmentStore } from '../../store/useAppointmentStore';
-import { formatPrice, formatDate, getStatusColor, getPaymentColor } from '../../utils/helpers';
-import type { AppointmentStatus, PaymentStatus } from '../../types';
+import { formatPrice, formatDate, getStatusColor, getPaymentColor, formatFullDate } from '../../utils/helpers';
+import type { Appointment, AppointmentStatus, PaymentStatus } from '../../types';
 import toast from 'react-hot-toast';
 
 const STATUSES: AppointmentStatus[] = ['Pending', 'Confirmed', 'In Progress', 'Completed', 'Cancelled', 'No Show'];
@@ -22,9 +22,47 @@ export default function AdminAppointmentsPage() {
         return matchSearch && matchStatus && matchDate;
     }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    const handleStatus = (id: string, status: AppointmentStatus) => {
+    const sendWhatsAppNotification = (apt: Appointment, statusOverride?: AppointmentStatus) => {
+        let cleanPhone = apt.customerPhone.replace(/\D/g, '');
+
+        // Handle Sri Lankan phone formats
+        if (cleanPhone.startsWith('0') && cleanPhone.length === 10) {
+            cleanPhone = '94' + cleanPhone.substring(1);
+        } else if (cleanPhone.length === 9 && (cleanPhone.startsWith('7') || cleanPhone.startsWith('1'))) {
+            cleanPhone = '94' + cleanPhone;
+        }
+
+        const status = statusOverride || apt.status;
+        let message = '';
+        switch (status) {
+            case 'Confirmed':
+                message = `Hello ${apt.customerName},\n\nYour appointment for the ${apt.serviceName} has been successfully confirmed by Glam Studio.\n\nAppointment Details:\n📅 Date: ${formatFullDate(apt.date)}\n⏰ Time: ${apt.timeSlot}\n📍 Location: Glam Studio\n\nPlease arrive 10 minutes prior to your scheduled time.\n\nWe look forward to welcoming you.\nThank you for choosing Glam Studio.`;
+                break;
+            case 'In Progress':
+                message = `Hello ${apt.customerName},\n\nYour ${apt.serviceName} treatment has just started. ✨\n\nSit back and relax while we pamper you!\n\nThank you for choosing Glam Studio.`;
+                break;
+            case 'Completed':
+                message = `Hello ${apt.customerName},\n\nYour appointment is now completed. ✅\n\nThank you for choosing Glam Studio! We hope you love the results.\n\nWe'd love to hear your feedback. 💖`;
+                break;
+            case 'Cancelled':
+                message = `Hello ${apt.customerName},\n\nYour appointment for ${apt.serviceName} has been cancelled. ❌\n\nPlease contact us for more info or to reschedule.`;
+                break;
+            default:
+                message = `Hello ${apt.customerName},\n\nYour appointment update: ${status}.`;
+        }
+
+        const url = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank', 'noopener,noreferrer');
+    };
+
+    const handleStatus = (id: string, status: AppointmentStatus, notify = false) => {
         updateStatus(id, status);
         toast.success(`Status updated to ${status}`);
+
+        if (notify) {
+            const apt = appointments.find(a => a.id === id);
+            if (apt) sendWhatsAppNotification(apt, status);
+        }
     };
 
     const handlePaymentStatus = (id: string, status: PaymentStatus) => {
@@ -87,7 +125,8 @@ export default function AdminAppointmentsPage() {
                                 >
                                     <td className="px-5 py-4">
                                         <div className="font-medium text-[var(--text-primary)]">{apt.customerName}</div>
-                                        <div className="text-xs text-[var(--text-muted)]">{apt.customerEmail}</div>
+                                        <div className="text-xs text-[var(--text-muted)]">{apt.customerPhone}</div>
+                                        <div className="text-[10px] text-[var(--text-muted)] opacity-50">{apt.customerEmail}</div>
                                     </td>
                                     <td className="px-5 py-4 text-[var(--text-secondary)]">{apt.serviceName}</td>
                                     <td className="px-5 py-4">
@@ -121,16 +160,16 @@ export default function AdminAppointmentsPage() {
                                                 {apt.status === 'Pending' && (
                                                     <>
                                                         <button
-                                                            onClick={() => handleStatus(apt.id, 'Confirmed')}
-                                                            className="text-[10px] px-2 py-1 bg-[var(--status-completed-bg)] text-[var(--status-completed)] border border-[var(--status-completed)]/20 rounded-md hover:bg-[var(--status-completed-bg)]/30 transition-all flex items-center gap-1"
-                                                            title="Confirm Appointment"
+                                                            onClick={() => handleStatus(apt.id, 'Confirmed', true)}
+                                                            className="text-[10px] px-2 py-1 bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/20 rounded-md hover:bg-[#25D366]/20 transition-all flex items-center gap-1"
+                                                            title="Accept & Notify via WhatsApp"
                                                         >
-                                                            <Check className="w-3 h-3" /> Accept
+                                                            <MessageCircle className="w-3 h-3" /> Accept & Notify
                                                         </button>
                                                         <button
-                                                            onClick={() => handleStatus(apt.id, 'Cancelled')}
+                                                            onClick={() => handleStatus(apt.id, 'Cancelled', true)}
                                                             className="text-[10px] px-2 py-1 bg-[var(--status-cancelled-bg)] text-[var(--status-cancelled)] border border-[var(--status-cancelled)]/20 rounded-md hover:bg-[var(--status-cancelled-bg)]/30 transition-all"
-                                                            title="Reject Appointment"
+                                                            title="Reject & Notify"
                                                         >
                                                             Reject
                                                         </button>
@@ -139,9 +178,16 @@ export default function AdminAppointmentsPage() {
                                                 {apt.status === 'Confirmed' && (
                                                     <>
                                                         <button
-                                                            onClick={() => handleStatus(apt.id, 'In Progress')}
+                                                            onClick={() => sendWhatsAppNotification(apt)}
+                                                            className="p-1 px-2 bg-[#25D366]/10 text-[#25D366] rounded-md hover:bg-[#25D366]/20 transition-all flex items-center gap-1 text-[10px]"
+                                                            title="Send Reminder via WhatsApp"
+                                                        >
+                                                            <MessageCircle className="w-3.5 h-3.5" /> Re-notify
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleStatus(apt.id, 'In Progress', true)}
                                                             className="text-[10px] px-2 py-1 bg-[var(--status-confirmed-bg)] text-[var(--status-confirmed)] border border-[var(--status-confirmed)]/20 rounded-md hover:bg-[var(--status-confirmed-bg)]/30 transition-all flex items-center gap-1"
-                                                            title="Start Service"
+                                                            title="Start & Notify"
                                                         >
                                                             <Clock className="w-3 h-3" /> Start
                                                         </button>
@@ -152,20 +198,13 @@ export default function AdminAppointmentsPage() {
                                                         >
                                                             <AlertCircle className="w-3 h-3" /> No Show
                                                         </button>
-                                                        <button
-                                                            onClick={() => handleStatus(apt.id, 'Cancelled')}
-                                                            className="text-[10px] px-2 py-1 bg-[var(--status-cancelled-bg)] text-[var(--status-cancelled)] border border-[var(--status-cancelled)]/20 rounded-md hover:bg-[var(--status-cancelled-bg)]/30 transition-all"
-                                                            title="Cancel Appointment"
-                                                        >
-                                                            Cancel
-                                                        </button>
                                                     </>
                                                 )}
                                                 {apt.status === 'In Progress' && (
                                                     <button
-                                                        onClick={() => handleStatus(apt.id, 'Completed')}
+                                                        onClick={() => handleStatus(apt.id, 'Completed', true)}
                                                         className="text-[10px] px-2 py-1 bg-[var(--status-completed-bg)] text-[var(--status-completed)] border border-[var(--status-completed)]/20 rounded-md hover:bg-[var(--status-completed-bg)]/30 transition-all flex items-center gap-1"
-                                                        title="Finish Service"
+                                                        title="Complete & Notify"
                                                     >
                                                         <Check className="w-3 h-3" /> Complete
                                                     </button>
@@ -175,7 +214,7 @@ export default function AdminAppointmentsPage() {
                                             {/* Manual Override Dropdown */}
                                             <select
                                                 value={apt.status}
-                                                onChange={(e) => handleStatus(apt.id, e.target.value as AppointmentStatus)}
+                                                onChange={(e) => handleStatus(apt.id, e.target.value as AppointmentStatus, false)}
                                                 className="bg-[var(--bg-card)] border border-[var(--border)] text-[10px] rounded px-1 py-0.5 text-[var(--text-muted)] focus:border-[var(--gold)] outline-none"
                                             >
                                                 {STATUSES.map(s => (

@@ -27,6 +27,10 @@ export function formatDate(dateStr: string): string {
     return format(new Date(dateStr), 'dd MMM yyyy');
 }
 
+export function formatFullDate(dateStr: string): string {
+    return format(new Date(dateStr), 'dd MMMM yyyy');
+}
+
 export function formatDateTime(dateStr: string): string {
     return format(new Date(dateStr), 'dd MMM yyyy, hh:mm a');
 }

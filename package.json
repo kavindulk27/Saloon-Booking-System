@@ -12,6 +12,7 @@
   "dependencies": {
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "firebase": "^12.10.0",
     "framer-motion": "^12.34.3",
     "jspdf": "^4.2.0",
     "lucide-react": "^0.575.0",
@@ -33,6 +34,7 @@
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
+    "firebase-tools": "^15.8.0",
     "globals": "^16.5.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.2.0",

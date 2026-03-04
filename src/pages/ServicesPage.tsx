@@ -5,11 +5,11 @@ import {
     Search, Clock, Tag, Package, ArrowRight, Scissors,
     Sparkles, Gem, Award, HeartPulse, Star, X, Check,
     User, Calendar, MapPin, ShieldCheck, Wallet,
-    ChevronLeft, ChevronRight, CheckCircle2
+    ChevronLeft, ChevronRight, CheckCircle2, MessageCircle
 } from 'lucide-react';
 import { mockServices, mockGallery } from '../utils/mockData';
 import { useStaffStore } from '../store/useStaffStore';
-import { formatPrice, formatDuration, generateBookingId } from '../utils/helpers';
+import { formatPrice, formatDuration, generateBookingId, formatDate } from '../utils/helpers';
 import type { Service, ServiceCategory } from '../types';
 import { useReviewStore } from '../store/useReviewStore';
 import { useAuthStore } from '../store/useAuthStore';
@@ -48,6 +48,8 @@ export default function ServicesPage() {
     const [selectedStaff, setSelectedStaff] = useState(staff[0]);
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [selectedTime, setSelectedTime] = useState('10:00 AM');
+    const [phone, setPhone] = useState(user?.phone || '');
+    const [phoneError, setPhoneError] = useState('');
 
     const filtered = useMemo(() => {
         return mockServices.filter(s => {
@@ -77,6 +79,13 @@ export default function ServicesPage() {
 
         if (!selectedService) return;
 
+        if (!phone || phone.length < 9) {
+            setPhoneError('Please enter a valid WhatsApp number');
+            toast.error('Please enter a valid WhatsApp number');
+            return;
+        }
+        setPhoneError('');
+
         const rawTime = selectedTime.includes('AM') ? selectedTime.split(' ')[0] : (parseInt(selectedTime.split(':')[0]) + 12) + ':' + selectedTime.split(':')[1].split(' ')[0];
 
         if (useAppointmentStore.getState().isSlotTaken(selectedStaff.id, selectedDate, rawTime)) {
@@ -90,6 +99,7 @@ export default function ServicesPage() {
             customerId: user.id,
             customerName: user.name,
             customerEmail: user.email,
+            customerPhone: phone,
             serviceId: selectedService.id,
             serviceName: selectedService.name,
             servicePrice: selectedService.discountPrice || selectedService.price,
@@ -103,12 +113,11 @@ export default function ServicesPage() {
             createdAt: new Date().toISOString()
         };
 
-        // @ts-ignore
         addAppointment(appointment);
         toast.success(
             <div className="flex flex-col gap-1">
                 <span className="font-bold">Your booking request has been submitted successfully! ✨</span>
-                <span className="text-xs opacity-80 italic">Waiting for confirmation.</span>
+                <span className="text-xs opacity-80 italic">We will notify you via WhatsApp once confirmed.</span>
             </div>,
             { duration: 5000 }
         );
@@ -491,18 +500,29 @@ export default function ServicesPage() {
                                                                 </div>
                                                                 <div>
                                                                     <p className="text-[9px] text-[var(--text-muted)] uppercase tracking-widest font-bold mb-0.5">Date & Time</p>
-                                                                    <p className="text-sm text-[var(--text-primary)] font-semibold">{selectedDate} @ {selectedTime}</p>
+                                                                    <p className="text-sm text-[var(--text-primary)] font-semibold">{formatDate(selectedDate)} @ {selectedTime}</p>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div className="space-y-4">
                                                             <div className="flex items-start gap-3">
                                                                 <div className="mt-1 w-8 h-8 rounded-full bg-[var(--bg-secondary)] flex items-center justify-center text-[var(--gold)] border border-[var(--border)]">
-                                                                    <MapPin className="w-4 h-4" />
+                                                                    <MessageCircle className="w-4 h-4" />
                                                                 </div>
-                                                                <div>
-                                                                    <p className="text-[9px] text-[var(--text-muted)] uppercase tracking-widest font-bold mb-0.5">Studio Location</p>
-                                                                    <p className="text-sm text-[var(--text-primary)] font-semibold">Glamour Main, Colombo 03</p>
+                                                                <div className="flex-1">
+                                                                    <p className="text-[9px] text-[var(--text-muted)] uppercase tracking-widest font-bold mb-0.5">WhatsApp Number</p>
+                                                                    <input
+                                                                        type="tel"
+                                                                        value={phone}
+                                                                        onChange={e => {
+                                                                            setPhone(e.target.value);
+                                                                            if (e.target.value.length >= 9) setPhoneError('');
+                                                                        }}
+                                                                        placeholder="+94 77 123 4567"
+                                                                        className={`w-full bg-transparent border-b ${phoneError ? 'border-red-500' : 'border-[var(--border)]'} text-sm text-[var(--text-primary)] focus:border-[var(--gold)] outline-none py-0.5`}
+                                                                    />
+                                                                    {phoneError && <p className="text-[10px] text-red-500 mt-1">{phoneError}</p>}
+                                                                    <p className="text-[8px] text-[var(--text-muted)] mt-1 italic">Required for appointment updates via WhatsApp</p>
                                                                 </div>
                                                             </div>
                                                             <div className="flex items-start gap-3">
@@ -510,8 +530,8 @@ export default function ServicesPage() {
                                                                     <ShieldCheck className="w-4 h-4" />
                                                                 </div>
                                                                 <div>
-                                                                    <p className="text-[9px] text-[var(--text-muted)] uppercase tracking-widest font-bold mb-0.5">Security</p>
-                                                                    <p className="text-sm text-[var(--text-primary)] font-semibold">Payment at Saloon Counter</p>
+                                                                    <p className="text-[9px] text-[var(--text-muted)] uppercase tracking-widest font-bold mb-0.5">Payment Policy</p>
+                                                                    <p className="text-sm text-[var(--text-primary)] font-semibold">Pay at the Counter</p>
                                                                 </div>
                                                             </div>
                                                         </div>

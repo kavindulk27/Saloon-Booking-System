@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Edit2, Trash2, Search, X, Check, Star } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, X, Check, Star, Lock, Camera, User as UserIcon } from 'lucide-react';
 import { useStaffStore } from '../../store/useStaffStore';
-import type { Staff, ServiceCategory, DayOfWeek } from '../../types';
+import type { Staff, ServiceCategory, DayOfWeek, User } from '../../types';
 import toast from 'react-hot-toast';
+import { db, createSecondaryAuth } from '../../lib/firebase';
+import { doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { createUserWithEmailAndPassword, deleteUser, signOut } from 'firebase/auth';
 
 const DAYS: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const CATEGORIES: ServiceCategory[] = ['Hair', 'Facial', 'Bridal', 'Nails', 'Massage', 'Makeup'];
@@ -13,7 +16,8 @@ export default function AdminStaffPage() {
     const [search, setSearch] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState<Staff | null>(null);
-    const [form, setForm] = useState<Partial<Staff>>({});
+    const [form, setForm] = useState<Partial<Staff & { password?: string }>>({});
+    const [submitting, setSubmitting] = useState(false);
 
     const filtered = staff.filter(s => s.name.toLowerCase().includes(search.toLowerCase()));
 
@@ -28,6 +32,7 @@ export default function AdminStaffPage() {
             isOnLeave: false,
             rating: 5,
             totalAppointments: 0,
+            avatar: '',
         });
         setShowModal(true);
     };
@@ -54,21 +59,75 @@ export default function AdminStaffPage() {
         }));
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!form.name || !form.email) { toast.error('Name and email are required'); return; }
-        if (editing) {
-            updateStaff(editing.id, form);
-            toast.success('Staff updated');
-        } else {
-            addStaff({ id: `s${Date.now()}`, ...form } as Staff);
-            toast.success('Staff added');
+        if (!editing && !form.password) { toast.error('Password is required for new staff'); return; }
+
+        setSubmitting(true);
+        try {
+            if (editing) {
+                await updateStaff(editing.id, form);
+                await setDoc(doc(db, 'users', editing.id), {
+                    name: form.name,
+                    email: form.email,
+                    phone: form.phone || '',
+                    avatar: form.avatar || '',
+                }, { merge: true });
+                toast.success('Staff updated');
+            } else {
+                const secondaryAuth = createSecondaryAuth();
+                const userCredential = await createUserWithEmailAndPassword(secondaryAuth, form.email!, form.password!);
+                const uid = userCredential.user.uid;
+
+                const newStaff: Staff = {
+                    id: uid,
+                    name: form.name!,
+                    email: form.email!,
+                    phone: form.phone || '',
+                    avatar: form.avatar || '',
+                    specializations: form.specializations || [],
+                    workingDays: form.workingDays || [],
+                    workingHours: form.workingHours || { start: '09:00', end: '18:00' },
+                    commissionPercentage: form.commissionPercentage || 15,
+                    isOnLeave: false,
+                    rating: 5,
+                    totalAppointments: 0,
+                };
+                await setDoc(doc(db, 'staff', uid), newStaff);
+
+                const newUser: User = {
+                    id: uid,
+                    name: form.name!,
+                    email: form.email!,
+                    phone: form.phone || '',
+                    role: 'staff',
+                    avatar: form.avatar || '',
+                    loyaltyPoints: 0,
+                    joinDate: new Date().toISOString().split('T')[0],
+                };
+                await setDoc(doc(db, 'users', uid), newUser);
+
+                await signOut(secondaryAuth);
+                toast.success('Staff member and account created successfully!');
+            }
+            setShowModal(false);
+        } catch (error: any) {
+            console.error("Save error:", error);
+            toast.error(error.message || 'Failed to save staff');
+        } finally {
+            setSubmitting(false);
         }
-        setShowModal(false);
     };
 
-    const handleDelete = (id: string) => {
-        deleteStaff(id);
-        toast.success('Staff removed');
+    const handleDelete = async (id: string) => {
+        if (!confirm('Are you sure you want to remove this staff member?')) return;
+        try {
+            await deleteStaff(id);
+            await deleteDoc(doc(db, 'users', id));
+            toast.success('Staff removed');
+        } catch (error: any) {
+            toast.error('Failed to remove staff');
+        }
     };
 
     return (
@@ -97,17 +156,23 @@ export default function AdminStaffPage() {
                         transition={{ delay: i * 0.07 }}
                         className="card p-5"
                     >
-                        <div className="flex items-start justify-between mb-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-full bg-[#D4AF37] flex items-center justify-center text-black text-sm font-bold">
-                                    {s.name.split(' ').map(n => n[0]).join('')}
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="relative group/avatar">
+                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--gold)]/20 to-[var(--gold)]/5 flex items-center justify-center border border-[var(--border)] overflow-hidden">
+                                    {s.avatar ? (
+                                        <img src={s.avatar} className="w-full h-full object-cover" alt={s.name} />
+                                    ) : (
+                                        <span className="text-xl font-bold text-[var(--gold)]">
+                                            {s.name.split(' ').map(n => n[0]).join('')}
+                                        </span>
+                                    )}
                                 </div>
-                                <div>
-                                    <div className="font-semibold text-[var(--text-primary)]">{s.name}</div>
-                                    <div className="text-xs text-[var(--text-muted)]">{s.email}</div>
-                                </div>
+                                <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-[var(--bg-card)] ${s.isOnLeave ? 'bg-red-500' : 'bg-green-500'} shadow-sm`} />
                             </div>
-                            <div className={`w-2.5 h-2.5 rounded-full mt-1 ${s.isOnLeave ? 'bg-[var(--status-cancelled)]' : 'bg-[var(--status-completed)]'}`} />
+                            <div className="flex-1 min-w-0">
+                                <div className="font-bold text-[var(--text-primary)] truncate text-lg">{s.name}</div>
+                                <div className="text-xs text-[var(--text-muted)] truncate opacity-80">{s.email}</div>
+                            </div>
                         </div>
 
                         <div className="flex flex-wrap gap-1 mb-3">
@@ -174,6 +239,34 @@ export default function AdminStaffPage() {
                                 <button onClick={() => setShowModal(false)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]"><X className="w-5 h-5" /></button>
                             </div>
 
+                            <div className="flex flex-col items-center justify-center pb-4 pt-2">
+                                <div className="relative group cursor-pointer" onClick={() => {
+                                    const url = prompt('Enter Image URL:', form.avatar || '');
+                                    if (url !== null) setForm(f => ({ ...f, avatar: url }));
+                                }}>
+                                    <div className="w-24 h-24 rounded-[2rem] bg-[var(--bg-glass)] border-2 border-dashed border-[var(--border)] flex flex-col items-center justify-center overflow-hidden group-hover:border-[var(--gold)]/50 transition-all">
+                                        {form.avatar ? (
+                                            <img src={form.avatar} className="w-full h-full object-cover" alt="Preview" />
+                                        ) : (
+                                            <div className="flex flex-col items-center text-[var(--text-muted)]">
+                                                <Camera className="w-6 h-6 mb-1" />
+                                                <span className="text-[10px] uppercase font-bold tracking-tighter">Photo URL</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-xl bg-[var(--gold)] text-black flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+                                        <Plus className="w-4 h-4" />
+                                    </div>
+                                </div>
+                                <input
+                                    type="text"
+                                    placeholder="Paste image URL here..."
+                                    value={form.avatar || ''}
+                                    onChange={e => setForm(f => ({ ...f, avatar: e.target.value }))}
+                                    className="mt-4 w-full text-xs bg-transparent border-b border-[var(--border)] focus:border-[var(--gold)] px-2 py-1 text-center outline-none italic text-[var(--text-muted)]"
+                                />
+                            </div>
+
                             <div className="space-y-4">
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
@@ -187,8 +280,25 @@ export default function AdminStaffPage() {
                                 </div>
                                 <div>
                                     <label className="label">Email *</label>
-                                    <input type="email" value={form.email || ''} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} className="input-field" />
+                                    <input type="email" value={form.email || ''} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} className="input-field" disabled={!!editing} />
                                 </div>
+
+                                {!editing && (
+                                    <div>
+                                        <label className="label">Password *</label>
+                                        <div className="relative">
+                                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+                                            <input
+                                                type="text"
+                                                value={form.password || ''}
+                                                onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+                                                className="input-field pl-10"
+                                                placeholder="e.g. Staff@123"
+                                            />
+                                        </div>
+                                        <p className="text-[10px] text-[var(--text-muted)] mt-1">Provide this password to the staff member for their first login.</p>
+                                    </div>
+                                )}
 
                                 <div>
                                     <label className="label">Specializations</label>
@@ -214,7 +324,7 @@ export default function AdminStaffPage() {
                                                 key={day}
                                                 type="button"
                                                 onClick={() => toggleDay(day)}
-                                                className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${(form.workingDays || []).includes(day) ? 'bg-[#D4AF37] border-[#D4AF37] text-black' : 'border-white/10 text-gray-400 hover:text-white'}`}
+                                                className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${(form.workingDays || []).includes(day) ? 'bg-[#D4AF37] border-[#D4AF37] text-black' : 'border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
                                             >
                                                 {day.slice(0, 3)}
                                             </button>
@@ -237,28 +347,37 @@ export default function AdminStaffPage() {
                                     </div>
                                 </div>
 
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                    <div
-                                        onClick={() => setForm(f => ({ ...f, isOnLeave: !f.isOnLeave }))}
-                                        className={`w-10 h-5 rounded-full transition-colors relative ${form.isOnLeave ? 'bg-red-500' : 'bg-gray-600'}`}
-                                    >
-                                        <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.isOnLeave ? 'translate-x-5' : 'translate-x-0.5'}`} />
-                                    </div>
-                                    <span className="text-sm text-[var(--text-secondary)]">On Leave</span>
-                                </label>
-                                {form.isOnLeave && (
-                                    <div>
-                                        <label className="label">Leave Until</label>
-                                        <input type="date" value={form.leaveUntil || ''} onChange={e => setForm(f => ({ ...f, leaveUntil: e.target.value }))} className="input-field" />
+                                {editing && (
+                                    <div className="flex items-center gap-3">
+                                        <input
+                                            type="checkbox"
+                                            id="onLeave"
+                                            checked={form.isOnLeave || false}
+                                            onChange={e => setForm(f => ({ ...f, isOnLeave: e.target.checked }))}
+                                            className="w-4 h-4 rounded text-[#D4AF37] focus:ring-[#D4AF37] border-gray-300"
+                                        />
+                                        <label htmlFor="onLeave" className="label mb-0">On Leave</label>
+                                        {form.isOnLeave && (
+                                            <input
+                                                type="date"
+                                                value={form.leaveUntil || ''}
+                                                onChange={e => setForm(f => ({ ...f, leaveUntil: e.target.value }))}
+                                                className="input-field flex-1"
+                                            />
+                                        )}
                                     </div>
                                 )}
-                            </div>
 
-                            <div className="flex gap-3 mt-6">
-                                <button onClick={() => setShowModal(false)} className="btn-ghost flex-1">Cancel</button>
-                                <button onClick={handleSave} className="btn-gold flex-1 flex items-center justify-center gap-2">
-                                    <Check className="w-4 h-4" /> Save
-                                </button>
+                                <div className="flex gap-3 mt-6">
+                                    <button onClick={() => setShowModal(false)} className="btn-ghost flex-1" disabled={submitting}>Cancel</button>
+                                    <button onClick={handleSave} className="btn-gold flex-1 flex items-center justify-center gap-2" disabled={submitting}>
+                                        {submitting ? (
+                                            <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                                        ) : (
+                                            <><Check className="w-4 h-4" /> Save</>
+                                        )}
+                                    </button>
+                                </div>
                             </div>
                         </motion.div>
                     </motion.div>

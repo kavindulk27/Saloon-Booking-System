@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff, Scissors, AlertCircle, User } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
-import { mockStaff } from '../../utils/mockData';
+
 import toast from 'react-hot-toast';
 
 export default function StaffLoginPage() {
@@ -50,33 +50,7 @@ export default function StaffLoginPage() {
                     className="card-glass p-6 rounded-2xl"
                 >
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        <div>
-                            <label className="label text-[var(--text-secondary)]">Select Staff Member</label>
-                            <div className="relative">
-                                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
-                                <select
-                                    onChange={(e) => {
-                                        const staff = mockStaff.find(s => s.id === e.target.value);
-                                        if (staff) {
-                                            setEmail(staff.email);
-                                            setPassword('demo123'); // Set default demo password
-                                        }
-                                    }}
-                                    className="input-field pl-10 appearance-none bg-[var(--bg-secondary)] cursor-pointer text-[var(--text-primary)]"
-                                    defaultValue=""
-                                >
-                                    <option value="" disabled>Choose a staff member...</option>
-                                    {mockStaff.map(s => (
-                                        <option key={s.id} value={s.id}>{s.name}</option>
-                                    ))}
-                                </select>
-                                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--text-muted)]">
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
+
 
                         <div>
                             <label className="label text-[var(--text-secondary)]">Staff Email</label>
@@ -86,7 +60,7 @@ export default function StaffLoginPage() {
                                     type="email"
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
-                                    placeholder="Select a member above or enter email"
+                                    placeholder="Enter your staff email"
                                     className="input-field pl-10"
                                     required
                                 />
@@ -137,11 +111,7 @@ export default function StaffLoginPage() {
                         <p className="text-gray-500 text-xs">Staff Access Only</p>
                     </div>
 
-                    <div className="mt-5 pt-5 border-t border-white/10">
-                        <p className="text-xs text-center text-gray-500 italic">
-                            Select your profile from the list to quickly sign in to your dashboard.
-                        </p>
-                    </div>
+
                 </motion.div>
             </div>
         </div>

@@ -33,15 +33,7 @@ export default function LoginPage() {
         }
     };
 
-    const demoLogins = [
-        { label: 'Customer Demo', email: 'customer@demo.com', role: 'customer' },
-        { label: 'Admin Demo', email: 'admin@demo.com', role: 'admin' },
-        { label: 'Staff Demo', email: 'staff@demo.com', role: 'staff' },
-    ].filter(d => {
-        if (isAdminPath) return d.role === 'admin';
-        if (isStaffPath) return d.role === 'staff';
-        return d.role === 'customer';
-    });
+
 
     return (
         <div className="min-h-screen bg-[var(--bg-primary)] bg-grid flex items-center justify-center p-4">
@@ -79,7 +71,7 @@ export default function LoginPage() {
                                     type="email"
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
-                                    placeholder="admin@demo.com"
+                                    placeholder="Enter your email"
                                     className="input-field pl-10"
                                     required
                                 />
@@ -148,22 +140,7 @@ export default function LoginPage() {
                         )}
                     </div>
 
-                    <div className="mt-5 pt-5 border-t border-[var(--border)]">
-                        <p className="text-xs text-[var(--text-muted)] text-center mb-3">
-                            {isAdminPath ? 'Admin Quick Access' : isStaffPath ? 'Staff Quick Access' : 'Demo Access'}
-                        </p>
-                        <div className={`grid ${isAdminPath ? 'grid-cols-2' : 'grid-cols-1'} gap-2`}>
-                            {demoLogins.map(d => (
-                                <button
-                                    key={d.role}
-                                    onClick={() => { setEmail(d.email); setPassword('demo123'); }}
-                                    className="text-[10px] bg-[var(--bg-glass)] hover:bg-[var(--bg-glass)]/20 border border-[var(--border)] rounded-lg py-2 px-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all capitalize"
-                                >
-                                    {d.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+
                 </motion.div>
             </div>
         </div>

@@ -9,6 +9,7 @@ import { mockServices, mockReviews } from '../utils/mockData';
 import { useStaffStore } from '../store/useStaffStore';
 import { formatPrice } from '../utils/helpers';
 import { useAuthStore } from '../store/useAuthStore';
+import heroImage from '../assets/images/hero-main.jpg';
 
 const categories = [
     { name: 'Hair Artistry', icon: <Scissors className="w-6 h-6" />, desc: 'Cuts, Color & Level-Up Styling', count: 8, span: 'md:col-span-3 md:row-span-2' },
@@ -123,7 +124,7 @@ export default function HomePage() {
                     >
                         <div className="relative z-10 rounded-[2rem] lg:rounded-[3rem] overflow-hidden border border-[var(--border)] shadow-2xl aspect-[16/9] sm:aspect-[4/3] lg:aspect-[4/5] bg-[var(--bg-secondary)] group">
                             <img
-                                src="https://img.freepik.com/free-photo/modern-beauty-salon-interior_23-2148910541.jpg?w=1200&q=80"
+                                src={heroImage}
                                 className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700"
                                 alt="Studio Experience"
                             />
@@ -336,13 +337,17 @@ export default function HomePage() {
                                 className="group relative bg-[var(--bg-glass)] border border-[var(--border)] rounded-[3rem] p-10 flex flex-col items-center text-center hover:bg-[var(--bg-glass)]/20 transition-all duration-500"
                             >
                                 <div className="relative mb-8">
-                                    <div className="w-24 h-24 rounded-full bg-[var(--gold)]/10 p-1 flex items-center justify-center border border-[var(--border)] group-hover:scale-110 transition-transform duration-500">
-                                        <div className="w-full h-full rounded-full bg-gradient-to-br from-[var(--gold)] to-[#D9C17E] flex items-center justify-center text-black text-2xl font-bold shadow-2xl">
-                                            {staff.name.split(' ').map(n => n[0]).join('')}
-                                        </div>
+                                    <div className="w-28 h-36 rounded-[2.5rem] bg-[var(--bg-glass)] p-1 flex items-center justify-center border border-[var(--border)] group-hover:scale-105 transition-all duration-700 overflow-hidden shadow-2xl">
+                                        {staff.avatar ? (
+                                            <img src={staff.avatar} className="w-full h-full object-cover" alt={staff.name} />
+                                        ) : (
+                                            <div className="w-full h-full rounded-[2rem] bg-gradient-to-br from-[var(--gold)] to-[#D9C17E] flex items-center justify-center text-black text-3xl font-bold">
+                                                {staff.name.split(' ').map(n => n[0]).join('')}
+                                            </div>
+                                        )}
                                     </div>
-                                    <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-[var(--bg-secondary)] border border-[var(--border)] flex items-center justify-center text-[var(--gold)] shadow-xl">
-                                        <Award className="w-5 h-5" />
+                                    <div className="absolute -bottom-3 -right-3 w-12 h-12 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border)] flex items-center justify-center text-[var(--gold)] shadow-2xl group-hover:rotate-12 transition-transform">
+                                        <Award className="w-6 h-6" />
                                     </div>
                                 </div>
 

@@ -62,6 +62,7 @@ export interface Appointment {
     customerId: string;
     customerName: string;
     customerEmail: string;
+    customerPhone: string;
     serviceId: string;
     serviceName: string;
     servicePrice: number;

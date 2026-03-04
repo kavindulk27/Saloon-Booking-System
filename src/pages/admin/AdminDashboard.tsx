@@ -1,14 +1,25 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, TrendingUp, Users, Star, Clock, CheckCircle, XCircle, AlertCircle, Scissors } from 'lucide-react';
+import { Calendar, TrendingUp, Users, Clock, CheckCircle, Scissors, Database } from 'lucide-react';
 import { useAppointmentStore } from '../../store/useAppointmentStore';
 import { mockStaff, revenueData, servicePopularity, peakHoursData } from '../../utils/mockData';
 import { formatPrice, formatDate, getStatusColor } from '../../utils/helpers';
+import { seedDatabase } from '../../utils/seedDatabase';
 
 const BAR_COLORS = ['bg-[#D4AF37]', 'bg-[#F0D060]', 'bg-[#A08820]', 'bg-[#E9B44C]', 'bg-[#C5832A]'];
 
 export default function AdminDashboard() {
     const { appointments } = useAppointmentStore();
+    const [seeding, setSeeding] = useState(false);
+
+    const handleSeed = async () => {
+        setSeeding(true);
+        try {
+            await seedDatabase();
+        } finally {
+            setSeeding(false);
+        }
+    };
 
     const stats = useMemo(() => {
         const today = new Date().toISOString().split('T')[0];
@@ -34,9 +45,19 @@ export default function AdminDashboard() {
     return (
         <div className="p-6 max-w-7xl">
             {/* Header */}
-            <div className="mb-8">
-                <h1 className="font-serif text-2xl font-bold text-[var(--text-primary)]">Dashboard</h1>
-                <p className="text-[var(--text-muted)] text-sm mt-1">Welcome back, have a great day!</p>
+            <div className="mb-8 flex items-center justify-between">
+                <div>
+                    <h1 className="font-serif text-2xl font-bold text-[var(--text-primary)]">Dashboard</h1>
+                    <p className="text-[var(--text-muted)] text-sm mt-1">Welcome back, have a great day!</p>
+                </div>
+                <button
+                    onClick={handleSeed}
+                    disabled={seeding}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--border)] bg-[var(--bg-glass)] text-[var(--text-secondary)] hover:text-[var(--gold)] hover:border-[var(--gold)]/40 transition-all text-sm disabled:opacity-50"
+                >
+                    <Database className="w-4 h-4" />
+                    {seeding ? 'Seeding...' : 'Seed Database'}
+                </button>
             </div>
 
             {/* Stat Cards */}
