@@ -46,7 +46,10 @@ export const generateReceipt = (appointment: Appointment) => {
         y += 8;
     };
 
-    drawRow('Booking ID:', appointment.id);
+    const displayId = appointment.bookingId || (appointment.id.length > 10 ? appointment.id.split('-').pop() : appointment.id.slice(0, 8));
+
+    drawRow('Booking ID:', displayId || 'N/A');
+    drawRow('Service:', appointment.serviceName);
     drawRow('Date:', formatDate(appointment.date));
     drawRow('Time Slot:', appointment.timeSlot);
     drawRow('Customer:', appointment.customerName || 'Customer');
@@ -59,7 +62,7 @@ export const generateReceipt = (appointment: Appointment) => {
     // Service & Price
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text(appointment.serviceName, 20, y);
+    doc.text('Treatment Summary', 20, y);
     doc.text(formatPrice(appointment.servicePrice), 128, y, { align: 'right' });
 
     y += 15;
@@ -82,5 +85,6 @@ export const generateReceipt = (appointment: Appointment) => {
     doc.text('www.glamoursaloon.lk', 74, 190, { align: 'center' });
 
     // Save the PDF
-    doc.save(`Receipt-${appointment.id}.pdf`);
+    const fileName = `Receipt-${displayId}.pdf`;
+    doc.save(fileName);
 };
