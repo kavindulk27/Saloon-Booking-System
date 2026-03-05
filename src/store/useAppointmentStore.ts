@@ -31,19 +31,35 @@ export const useAppointmentStore = create<AppointmentState>()((set, get) => ({
 
     init: () => {
         const q = query(collection(db, 'appointments'), orderBy('date', 'desc'));
-        onSnapshot(q, (snapshot) => {
-            const appointments = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            } as Appointment));
-            set({ appointments });
-        });
+        const unsubscribe = onSnapshot(q,
+            (snapshot) => {
+                const appointments = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    return {
+                        ...data,
+                        id: doc.id,
+                        bookingId: data.bookingId || data.id || doc.id
+                    } as Appointment;
+                });
+                set({ appointments });
+            },
+            (error) => {
+                console.error("Firestore onSnapshot error:", error);
+                if (error.code === 'failed-precondition') {
+                    console.warn("Missing index? Check Firestore console.");
+                }
+            }
+        );
+        return unsubscribe;
     },
 
     addAppointment: async (apt) => {
         try {
-            await setDoc(doc(db, 'appointments', apt.id), {
+            const bookingId = apt.bookingId || apt.id;
+            await setDoc(doc(db, 'appointments', bookingId), {
                 ...apt,
+                bookingId: bookingId,
+                id: bookingId, // Keep synced for data consistency
                 createdAt: new Date().toISOString(),
             });
         } catch (error) {

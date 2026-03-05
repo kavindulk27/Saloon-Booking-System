@@ -23,9 +23,13 @@ export default function StaffSchedulePage() {
         a.staffId === staff?.id && a.date === dateStr
     ).sort((a, b) => a.timeSlot.localeCompare(b.timeSlot));
 
-    const handleUpdate = (id: string, status: AppointmentStatus) => {
-        updateStatus(id, status);
-        toast.success(`Marked as ${status}`);
+    const handleUpdate = async (id: string, status: AppointmentStatus) => {
+        try {
+            await updateStatus(id, status);
+            toast.success(`Marked as ${status}`);
+        } catch (error) {
+            toast.error('Failed to update status.');
+        }
     };
 
     const totalRevenue = todayApts

@@ -255,8 +255,11 @@ export default function MyAppointmentsPage() {
                                                                 <Hash className="w-4 h-4" />
                                                                 <span className="text-[10px] font-bold uppercase tracking-widest">Global Booking ID</span>
                                                             </div>
-                                                            <div className="text-lg font-mono text-[var(--text-primary)] select-all underline decoration-[var(--border-glass)] underline-offset-4 decoration-dashed">
-                                                                {app.id}
+                                                            <div className="text-[10px] font-mono text-[var(--gold)] mb-1">
+                                                                Booking ID: {app.bookingId || 'N/A'}
+                                                            </div>
+                                                            <div className="text-[8px] font-mono text-[var(--text-muted)] select-all opacity-50">
+                                                                System Ref: {app.id}
                                                             </div>
                                                         </div>
                                                     </div>

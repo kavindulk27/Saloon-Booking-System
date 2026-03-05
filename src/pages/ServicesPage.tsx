@@ -10,7 +10,7 @@ import {
 import { mockServices, mockGallery } from '../utils/mockData';
 import { useStaffStore } from '../store/useStaffStore';
 import { formatPrice, formatDuration, generateBookingId, formatDate } from '../utils/helpers';
-import type { Service, ServiceCategory } from '../types';
+import type { Service, ServiceCategory, Appointment } from '../types';
 import { useReviewStore } from '../store/useReviewStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { useAppointmentStore } from '../store/useAppointmentStore';
@@ -94,8 +94,10 @@ export default function ServicesPage() {
             return;
         }
 
-        const appointment = {
-            id: generateBookingId(),
+        const bookingId = generateBookingId();
+        const appointment: Appointment = {
+            id: bookingId,
+            bookingId: bookingId,
             customerId: user.id,
             customerName: user.name,
             customerEmail: user.email,
@@ -108,12 +110,12 @@ export default function ServicesPage() {
             date: selectedDate,
             timeSlot: rawTime,
             duration: selectedService.duration,
-            status: 'Pending' as const,
-            paymentStatus: 'Unpaid' as const,
+            status: 'Pending',
+            paymentStatus: 'Unpaid',
             createdAt: new Date().toISOString()
         };
 
-        addAppointment(appointment);
+        await addAppointment(appointment);
         toast.success(
             <div className="flex flex-col gap-1">
                 <span className="font-bold">Your booking request has been submitted successfully! ✨</span>

@@ -123,6 +123,11 @@ export default function StaffAppointmentsPage() {
                                     className="table-row"
                                 >
                                     <td className="px-5 py-4">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <span className="text-[10px] font-bold bg-[var(--gold)]/10 text-[var(--gold)] px-2 py-0.5 rounded border border-[var(--gold)]/20">
+                                                {apt.bookingId || apt.id.slice(0, 8)}
+                                            </span>
+                                        </div>
                                         <div className="font-medium text-[var(--text-primary)]">{apt.customerName}</div>
                                         <div className="text-xs text-[var(--text-muted)]">{apt.customerPhone || apt.customerEmail}</div>
                                     </td>

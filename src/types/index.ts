@@ -58,7 +58,8 @@ export interface Staff {
 export type AppointmentStatus = 'Pending' | 'Confirmed' | 'In Progress' | 'Completed' | 'Cancelled' | 'No Show';
 
 export interface Appointment {
-    id: string;
+    id: string; // Internal/Firestore ID
+    bookingId?: string; // Human readable ID (e.g. BK-...)
     customerId: string;
     customerName: string;
     customerEmail: string;
