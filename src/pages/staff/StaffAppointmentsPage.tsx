@@ -57,13 +57,17 @@ export default function StaffAppointmentsPage() {
         window.open(url, '_blank', 'noopener,noreferrer');
     };
 
-    const handleStatus = (id: string, status: AppointmentStatus, notify = false) => {
-        updateStatus(id, status);
-        toast.success(`Status updated to ${status}`);
+    const handleStatus = async (id: string, status: AppointmentStatus, notify = false) => {
+        try {
+            await updateStatus(id, status);
+            toast.success(`Status updated to ${status}`);
 
-        if (notify) {
-            const apt = appointments.find(a => a.id === id);
-            if (apt) sendWhatsAppNotification(apt, status);
+            if (notify) {
+                const apt = appointments.find(a => a.id === id);
+                if (apt) sendWhatsAppNotification(apt, status);
+            }
+        } catch (error) {
+            toast.error('Failed to update status.');
         }
     };
 

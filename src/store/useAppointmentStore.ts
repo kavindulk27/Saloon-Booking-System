@@ -4,6 +4,7 @@ import {
     addDoc,
     updateDoc,
     doc,
+    setDoc,
     onSnapshot,
     query,
     orderBy,
@@ -14,7 +15,7 @@ import type { Appointment, AppointmentStatus, PaymentStatus } from '../types';
 
 interface AppointmentState {
     appointments: Appointment[];
-    addAppointment: (apt: Omit<Appointment, 'id' | 'createdAt'>) => Promise<void>;
+    addAppointment: (apt: Appointment) => Promise<void>;
     updateStatus: (id: string, status: AppointmentStatus) => Promise<void>;
     updatePaymentStatus: (id: string, status: PaymentStatus) => Promise<void>;
     cancelAppointment: (id: string) => Promise<void>;
@@ -40,25 +41,45 @@ export const useAppointmentStore = create<AppointmentState>()((set, get) => ({
     },
 
     addAppointment: async (apt) => {
-        await addDoc(collection(db, 'appointments'), {
-            ...apt,
-            createdAt: new Date().toISOString(), // Fallback or use serverTimestamp
-        });
+        try {
+            await setDoc(doc(db, 'appointments', apt.id), {
+                ...apt,
+                createdAt: new Date().toISOString(),
+            });
+        } catch (error) {
+            console.error("Error adding appointment:", error);
+            throw error;
+        }
     },
 
     updateStatus: async (id, status) => {
-        await updateDoc(doc(db, 'appointments', id), { status });
+        try {
+            await updateDoc(doc(db, 'appointments', id), { status });
+        } catch (error) {
+            console.error("Error updating status:", error);
+            throw error;
+        }
     },
 
     updatePaymentStatus: async (id, paymentStatus) => {
-        await updateDoc(doc(db, 'appointments', id), { paymentStatus });
+        try {
+            await updateDoc(doc(db, 'appointments', id), { paymentStatus });
+        } catch (error) {
+            console.error("Error updating payment status:", error);
+            throw error;
+        }
     },
 
     cancelAppointment: async (id) => {
-        await updateDoc(doc(db, 'appointments', id), {
-            status: 'Cancelled',
-            paymentStatus: 'Refunded'
-        });
+        try {
+            await updateDoc(doc(db, 'appointments', id), {
+                status: 'Cancelled',
+                paymentStatus: 'Refunded'
+            });
+        } catch (error) {
+            console.error("Error cancelling appointment:", error);
+            throw error;
+        }
     },
 
     getByCustomer: (customerId) => {

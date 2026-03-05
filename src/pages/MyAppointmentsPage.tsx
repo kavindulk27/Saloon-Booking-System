@@ -26,7 +26,13 @@ export default function MyAppointmentsPage() {
     const [appointmentToCancel, setAppointmentToCancel] = useState<string | null>(null);
 
     const customerAppointments = appointments
-        .filter(app => app.customerEmail === user?.email)
+        .filter(app => {
+            // Priority 1: Match by customerId
+            if (user?.id && app.customerId === user.id) return true;
+            // Priority 2: Case-insensitive email match (fallback for legacy/session issues)
+            if (user?.email && app.customerEmail?.toLowerCase() === user.email.toLowerCase()) return true;
+            return false;
+        })
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     const getStatusConfig = (status: string) => {
@@ -47,11 +53,16 @@ export default function MyAppointmentsPage() {
         setIsConfirmModalOpen(true);
     };
 
-    const confirmCancel = () => {
+    const confirmCancel = async () => {
         if (appointmentToCancel) {
-            cancelAppointment(appointmentToCancel);
-            toast.success('Booking cancelled successfully.');
+            try {
+                await cancelAppointment(appointmentToCancel);
+                toast.success('Booking cancelled successfully.');
+            } catch (error) {
+                toast.error('Failed to cancel booking.');
+            }
             setAppointmentToCancel(null);
+            setIsConfirmModalOpen(false);
         }
     };
 
@@ -180,16 +191,31 @@ export default function MyAppointmentsPage() {
                                                         <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--gold)] mb-6">Request Timeline</h4>
                                                         <div className="relative flex justify-between items-center px-4">
                                                             <div className="absolute left-4 right-4 h-[1px] bg-[var(--border)] top-1/2 -translate-y-1/2 -z-10" />
-                                                            {['Pending', 'Confirmed', 'In Progress', 'Completed'].map((step, idx, arr) => {
+                                                            {['Pending', 'Confirmed', 'In Progress', 'Completed'].map((step, idx) => {
                                                                 const statuses = ['Pending', 'Confirmed', 'In Progress', 'Completed'];
                                                                 const currentIdx = statuses.indexOf(app.status);
                                                                 const isDone = currentIdx >= idx;
                                                                 const isCurrent = app.status === step;
                                                                 const isCancelled = app.status === 'Cancelled';
+                                                                const isNoShow = app.status === 'No Show';
+
+                                                                // Special handling for terminal states not in the normal flow
+                                                                if ((isCancelled || isNoShow) && idx >= 1) {
+                                                                    return (
+                                                                        <div key={step} className="flex flex-col items-center gap-3 relative opacity-30 grayscale">
+                                                                            <div className="w-8 h-8 rounded-full border border-[var(--border)] bg-[var(--bg-secondary)] flex items-center justify-center text-[var(--text-muted)]">
+                                                                                {idx + 1}
+                                                                            </div>
+                                                                            <span className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap text-[var(--text-muted)]">
+                                                                                {step}
+                                                                            </span>
+                                                                        </div>
+                                                                    );
+                                                                }
 
                                                                 return (
                                                                     <div key={step} className="flex flex-col items-center gap-3 relative">
-                                                                        <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all duration-1000 ${isCancelled ? 'bg-red-500/10 border-red-500/30 text-red-500' : isDone ? 'bg-[var(--gold)] border-[var(--gold)] text-black shadow-[0_0_15px_rgba(212,175,55,0.4)]' : 'bg-[var(--bg-secondary)] border-[var(--border)] text-[var(--text-muted)]'}`}>
+                                                                        <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all duration-1000 ${isDone ? 'bg-[var(--gold)] border-[var(--gold)] text-black shadow-[0_0_15px_rgba(212,175,55,0.4)]' : 'bg-[var(--bg-secondary)] border-[var(--border)] text-[var(--text-muted)]'}`}>
                                                                             {isDone ? <CheckCircle2 className="w-4 h-4" /> : idx + 1}
                                                                         </div>
                                                                         <span className={`text-[9px] font-bold uppercase tracking-widest whitespace-nowrap ${isCurrent ? 'text-[var(--gold)]' : 'text-[var(--text-muted)]'}`}>
@@ -198,6 +224,16 @@ export default function MyAppointmentsPage() {
                                                                     </div>
                                                                 );
                                                             })}
+                                                            {(app.status === 'Cancelled' || app.status === 'No Show') && (
+                                                                <div className="flex flex-col items-center gap-3 relative">
+                                                                    <div className="w-8 h-8 rounded-full bg-red-500/20 border border-red-500/40 text-red-500 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.3)]">
+                                                                        <XCircle className="w-4 h-4" />
+                                                                    </div>
+                                                                    <span className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap text-red-500">
+                                                                        {app.status}
+                                                                    </span>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </div>
 

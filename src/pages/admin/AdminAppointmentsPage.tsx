@@ -55,19 +55,27 @@ export default function AdminAppointmentsPage() {
         window.open(url, '_blank', 'noopener,noreferrer');
     };
 
-    const handleStatus = (id: string, status: AppointmentStatus, notify = false) => {
-        updateStatus(id, status);
-        toast.success(`Status updated to ${status}`);
+    const handleStatus = async (id: string, status: AppointmentStatus, notify = false) => {
+        try {
+            await updateStatus(id, status);
+            toast.success(`Status updated to ${status}`);
 
-        if (notify) {
-            const apt = appointments.find(a => a.id === id);
-            if (apt) sendWhatsAppNotification(apt, status);
+            if (notify) {
+                const apt = appointments.find(a => a.id === id);
+                if (apt) sendWhatsAppNotification(apt, status);
+            }
+        } catch (error) {
+            toast.error('Failed to update status.');
         }
     };
 
-    const handlePaymentStatus = (id: string, status: PaymentStatus) => {
-        useAppointmentStore.getState().updatePaymentStatus(id, status);
-        toast.success(`Payment marked as ${status}`);
+    const handlePaymentStatus = async (id: string, status: PaymentStatus) => {
+        try {
+            await useAppointmentStore.getState().updatePaymentStatus(id, status);
+            toast.success(`Payment marked as ${status}`);
+        } catch (error) {
+            toast.error('Failed to update payment status.');
+        }
     };
 
     return (
