@@ -45,11 +45,18 @@ export default function ServicesPage() {
     // Modal & Booking State
     const [selectedService, setSelectedService] = useState<Service | null>(null);
     const [bookingStep, setBookingStep] = useState(1);
-    const [selectedStaff, setSelectedStaff] = useState(staff[0]);
+    const [selectedStaff, setSelectedStaff] = useState(staff[0] || null);
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [selectedTime, setSelectedTime] = useState('10:00 AM');
     const [phone, setPhone] = useState(user?.phone || '');
     const [phoneError, setPhoneError] = useState('');
+
+    // Auto-select staff when data loads
+    useMemo(() => {
+        if (!selectedStaff && staff.length > 0) {
+            setSelectedStaff(staff[0]);
+        }
+    }, [staff, selectedStaff]);
 
     const filtered = useMemo(() => {
         return mockServices.filter(s => {
@@ -88,6 +95,12 @@ export default function ServicesPage() {
 
         const rawTime = selectedTime.includes('AM') ? selectedTime.split(' ')[0] : (parseInt(selectedTime.split(':')[0]) + 12) + ':' + selectedTime.split(':')[1].split(' ')[0];
 
+        if (!selectedStaff) {
+            toast.error('Please select an artist');
+            setBookingStep(2);
+            return;
+        }
+
         if (useAppointmentStore.getState().isSlotTaken(selectedStaff.id, selectedDate, rawTime)) {
             toast.error('This slot was just booked by someone else. Please pick another time.');
             setBookingStep(2);
@@ -105,8 +118,8 @@ export default function ServicesPage() {
             serviceId: selectedService.id,
             serviceName: selectedService.name,
             servicePrice: selectedService.discountPrice || selectedService.price,
-            staffId: selectedStaff.id,
-            staffName: selectedStaff.name,
+            staffId: selectedStaff?.id || '',
+            staffName: selectedStaff?.name || 'Any Artist',
             date: selectedDate,
             timeSlot: rawTime,
             duration: selectedService.duration,
@@ -416,7 +429,7 @@ export default function ServicesPage() {
                                                             <button
                                                                 key={s.id}
                                                                 onClick={() => setSelectedStaff(s)}
-                                                                className={`p-3 rounded-2xl border transition-all ${selectedStaff.id === s.id ? 'border-[var(--gold)] bg-[var(--gold)]/5' : 'bg-[var(--bg-glass)] border-[var(--border)] hover:border-[var(--gold)]/30'}`}
+                                                                className={`p-3 rounded-2xl border transition-all ${selectedStaff?.id === s.id ? 'border-[var(--gold)] bg-[var(--gold)]/5' : 'bg-[var(--bg-glass)] border-[var(--border)] hover:border-[var(--gold)]/30'}`}
                                                             >
                                                                 <div className="w-10 h-10 rounded-full bg-[var(--gold)]/20 flex items-center justify-center text-[var(--gold)] font-bold mx-auto mb-2 text-sm">
                                                                     {s.name[0]}
@@ -441,11 +454,11 @@ export default function ServicesPage() {
                                                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                                                         {['09:00 AM', '10:00 AM', '11:00 AM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM'].map(time => {
                                                             const rawTime = time.includes('AM') ? time.split(' ')[0] : (parseInt(time.split(':')[0]) + 12) + ':' + time.split(':')[1].split(' ')[0];
-                                                            const isTaken = useAppointmentStore.getState().isSlotTaken(selectedStaff.id, selectedDate, rawTime);
+                                                            const isTaken = selectedStaff ? useAppointmentStore.getState().isSlotTaken(selectedStaff.id, selectedDate, rawTime) : false;
                                                             return (
                                                                 <button
                                                                     key={time}
-                                                                    disabled={isTaken}
+                                                                    disabled={isTaken || !selectedStaff}
                                                                     onClick={() => setSelectedTime(time)}
                                                                     className={`py-2 rounded-xl text-xs font-bold transition-all ${isTaken ? 'bg-[var(--bg-glass)] text-[var(--text-muted)] opacity-30 cursor-not-allowed border border-[var(--border)]' : selectedTime === time ? 'bg-[var(--gold)] text-black border border-[var(--gold)] shadow-lg shadow-[#D4AF37]/20' : 'bg-[var(--bg-glass)] text-[var(--text-muted)] hover:text-[var(--text-primary)] border border-[var(--border)]'}`}
                                                                 >
@@ -502,7 +515,7 @@ export default function ServicesPage() {
                                                                 </div>
                                                                 <div>
                                                                     <p className="text-[9px] text-[var(--text-muted)] uppercase tracking-widest font-bold mb-0.5">Stylist</p>
-                                                                    <p className="text-sm text-[var(--text-primary)] font-semibold">{selectedStaff.name}</p>
+                                                                    <p className="text-sm text-[var(--text-primary)] font-semibold">{selectedStaff?.name || 'Any Artist'}</p>
                                                                 </div>
                                                             </div>
                                                             <div className="flex items-start gap-3">
