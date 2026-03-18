@@ -251,7 +251,7 @@ export default function ServicesPage() {
                             initial={{ opacity: 0, scale: 0.9, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="relative w-full max-w-5xl bg-[var(--bg-card)] rounded-3xl border border-[var(--border)] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+                            className="relative w-full max-w-5xl bg-[var(--bg-card)] rounded-3xl border border-[var(--border)] shadow-2xl overflow-hidden max-h-[92vh] sm:max-h-[90vh] flex flex-col"
                         >
                             {/* Close Button */}
                             <button
@@ -263,7 +263,7 @@ export default function ServicesPage() {
 
                             {/* Steps Indicator (Only show if starting booking) */}
                             {bookingStep > 1 && (
-                                <div className="bg-[var(--bg-glass)] border-b border-[var(--border)] p-4 flex justify-center gap-8">
+                                <div className="bg-[var(--bg-glass)] border-b border-[var(--border)] p-3 sm:p-4 flex justify-center gap-4 sm:gap-8">
                                     {bookingSteps.map((s, i) => (
                                         <div key={s.id} className="flex items-center gap-2">
                                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${bookingStep >= s.id ? 'bg-[var(--gold)] text-black' : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] border border-[var(--border)]'}`}>
@@ -278,9 +278,9 @@ export default function ServicesPage() {
                                 </div>
                             )}
 
-                            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+                            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
                                 {/* Left Content Area */}
-                                <div className="flex-1 overflow-y-auto p-6 lg:p-10">
+                                <div className="flex-1 overflow-y-auto p-5 sm:p-6 lg:p-10 custom-scrollbar">
                                     <AnimatePresence mode="wait">
                                         {bookingStep === 1 && (
                                             <motion.div
@@ -306,6 +306,15 @@ export default function ServicesPage() {
                                                 </h2>
 
                                                 <div className="flex flex-wrap items-center gap-6 mb-8 text-[var(--text-muted)]">
+                                                    {/* Featured Image for Mobile */}
+                                                    <div className="lg:hidden w-full aspect-[16/9] rounded-2xl overflow-hidden border border-[var(--border)] mb-6 shadow-lg">
+                                                        <img 
+                                                            src={selectedService.image || (serviceGallery.length > 0 ? serviceGallery[0].image : 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=800')} 
+                                                            alt={selectedService.name}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    </div>
+
                                                     <div className="flex items-center gap-2 text-lg">
                                                         <Clock className="w-5 h-5 text-[var(--gold)]" />
                                                         <span>{formatDuration(selectedService.duration)}</span>
@@ -553,9 +562,9 @@ export default function ServicesPage() {
                                     </AnimatePresence>
                                 </div>
 
-                                {/* Right Gallery View (Only show in step 1) */}
+                                {/* Right Gallery View (Only show in step 1 on desktop) */}
                                 {bookingStep === 1 && (
-                                    <div className="w-full lg:w-[350px] bg-[var(--bg-secondary)] border-l border-[var(--border)] flex flex-col">
+                                    <div className="hidden lg:flex w-full lg:w-[350px] bg-[var(--bg-secondary)] border-l border-[var(--border)] flex-col">
                                         <div className="p-6 border-b border-[var(--border)]">
                                             <h4 className="flex items-center gap-2 text-xs font-bold uppercase text-[var(--gold)] tracking-widest">
                                                 <Sparkles className="w-3.5 h-3.5" />
